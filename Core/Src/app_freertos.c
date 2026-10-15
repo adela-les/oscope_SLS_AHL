@@ -54,7 +54,10 @@ const osThreadAttr_t defaultTask_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void Character_Reading(void)
+{
+  return NULL; /*TO DO*/
+}
 /* USER CODE END FunctionPrototypes */
 
 /**
