@@ -1,0 +1,20 @@
+Pin Plan by Sydney and Adela
+Digital Display:
+2 Power Pin (3.3V); Pin 3v3
+1 MOSI; PA7
+1 CLK; PA5
+
+Character Display:
+11 GPIO Output Pin; PB0-10
+3 Ground Pins; GND
+1 Power Pin (5V); 5V
+
+Inputs:
+6 Input Pins for Encoders; E1:PC2 & PC3  E2:PC10 & PC11  E3:PC13 & PC14
+1 Input Pin for Button; PC15
+
+Single Channel Scope:
+1 ADC Pin; PA0
+
+Debug:
+Multiple GPIO Pins; TBD

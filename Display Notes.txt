@@ -1,0 +1,23 @@
+Display Notes
+
+Character Display:
+Expected would be voltage height "2.1 v Tall" example
+Time width "20us Wide" example
+You need a trigger level "1.0v"
+You need rise or fall. 
+
+Top row would be voltage left side and trigger right side
+Bottom row would be time width left side and rise or fall right side. 
+
+the Character display is two lines 16 characters each. 
+Use Byte by Byte for Pinout
+Alphabet is ASCII so will be 8 bits. You need to ensure you have correct order that's why we use byte for byte.
+
+E is the clock
+DI is RS that is where you would send data.
+
+
+Wave Display:
+It is 104 pixels wide by 64 pixels tall. The 1v would be in the middle of the width.
+Need a few GPIO and SPI pins
+
