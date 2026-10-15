@@ -2,7 +2,7 @@ Pin Plan by Sydney and Adela
 Digital Display:
 2 Power Pin (3.3V); Pin 3v3
 1 MOSI; PA7
-1 CLK; PA5
+1 CLK; PA1
 
 Character Display:
 11 GPIO Output Pin; PB0-10
