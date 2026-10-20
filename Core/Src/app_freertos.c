@@ -56,7 +56,7 @@ const osThreadAttr_t defaultTask_attributes = {
 /* USER CODE BEGIN FunctionPrototypes */
 void Character_Reading(void)
 {
-  return NULL; /*TO DO*/
+  ; /*TO DO*/
 }
 /* USER CODE END FunctionPrototypes */
 
