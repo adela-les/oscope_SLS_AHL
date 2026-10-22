@@ -21,3 +21,11 @@ Wave Display:
 It is 104 pixels wide by 64 pixels tall. The 1v would be in the middle of the width.
 Need a few GPIO and SPI pins
 
+If black bar is top column would be 0-101 across. Pin is 28-15 going left to right. 
+
+1 CD; This will decide what we are doing according to the data sheet
+1 RST; Set Low may need later
+1 CS0; Always keep low
+
+
+
