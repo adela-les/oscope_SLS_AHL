@@ -26,6 +26,7 @@
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -46,10 +47,27 @@
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+uint32_t MyBufferTask00[ 128 ];
+osStaticThreadDef_t MycontrolBlocTask00;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
+  .stack_mem = &MyBufferTask00[0],
+  .stack_size = sizeof(MyBufferTask00),
+  .cb_mem = &MycontrolBlocTask00,
+  .cb_size = sizeof(MycontrolBlocTask00),
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
+};
+/* Definitions for myTask02 */
+osThreadId_t myTask02Handle;
+uint32_t MyBufferTask02[ 256 ];
+osStaticThreadDef_t MycontrolBlocTask02;
+const osThreadAttr_t myTask02_attributes = {
+  .name = "myTask02",
+  .stack_mem = &MyBufferTask02[0],
+  .stack_size = sizeof(MyBufferTask02),
+  .cb_mem = &MycontrolBlocTask02,
+  .cb_size = sizeof(MycontrolBlocTask02),
+  .priority = (osPriority_t) osPriorityBelowNormal3,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,6 +106,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
+  /* creation of myTask02 */
+  myTask02Handle = osThreadNew(WaveD_Task, NULL, &myTask02_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -117,6 +138,24 @@ void Transmit_Spi()
     osDelay(1);
   }
   /* USER CODE END defaultTask */
+}
+
+/* USER CODE BEGIN Header_WaveD_Task */
+/**
+* @brief Function implementing the myTask02 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_WaveD_Task */
+void WaveD_Task(void *argument)
+{
+  /* USER CODE BEGIN myTask02 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END myTask02 */
 }
 
 /* Private application code --------------------------------------------------*/
