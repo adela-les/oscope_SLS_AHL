@@ -8,10 +8,13 @@
 #include "main.h"
 #include "app_freertos.h"
 #include "Wave_Display.h"
+#include "stm32u0xx_11_gpio.h"
+#include "task.h"
+#include "semphr.h"
+#include <string.h>
 
-void Wave_Display_Init(void)
-{
-	/*Todo*/
-}
+/*Config display pixels for top oriented display*/
+#ifdef WaveD_Top_View
+#define Seg_CMD
 
 
