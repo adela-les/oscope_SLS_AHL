@@ -12,9 +12,9 @@
 #define WaveD_H 64;
 
 void WaveD_Init(void);  /*Reset, Turn Display On, Intialize*/
+void Wave_Task_Body(void);
 void WaveD_Clear(void);  /*Clear the frame Buffer*/
-void WaveD_Pixel(int x, int y);  /*Turn on one frame*/
-void WaveD_Line(int Start_X, int Start_Y, int End_X, int End_Y);
+void WaveD_Set_Pixel(int x, int y);  /*Turn on one frame*/
 void WaveD_Flush(void);  /*Send the frame*/
 
 
