@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Wave_Display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +90,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+	WaveD_Init();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -129,10 +130,6 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
   /* Infinite loop */
-void Transmit_Spi()
-{
-		/*TODO*/
-}
   for(;;)
   {
     osDelay(1);
@@ -151,15 +148,15 @@ void WaveD_Task(void *argument)
 {
   /* USER CODE BEGIN myTask02 */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  WaveD_Task_Body();
   /* USER CODE END myTask02 */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+void Transmit_Spi()
+{
+		/*TODO*/
+}
 /* USER CODE END Application */
 

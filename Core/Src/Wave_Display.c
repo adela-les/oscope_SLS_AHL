@@ -8,7 +8,7 @@
 #include "main.h"
 #include "app_freertos.h"
 #include "Wave_Display.h"
-#include "stm32u0xx_11_gpio.h"
+#include "stm32u0xx_ll_gpio.h"
 #include "task.h"
 #include "semphr.h"
 #include <string.h>
@@ -25,6 +25,27 @@
 #endif
 
 #define WaveD_Delay() do{} while(0)
+
+#ifndef DOGS_MOSI_Pin
+  #define DOGS_MOSI_GPIO_Port GPIOA
+  #define DOGS_MOSI_Pin       LL_GPIO_PIN_7
+#endif
+#ifndef DOGS_CLK_Pin
+  #define DOGS_CLK_GPIO_Port  GPIOA
+  #define DOGS_CLK_Pin        LL_GPIO_PIN_1
+#endif
+#ifndef DOGS_CD_Pin
+  #define DOGS_CD_GPIO_Port   GPIOA
+  #define DOGS_CD_Pin         LL_GPIO_PIN_4
+#endif
+#ifndef DOGS_RST_Pin
+  #define DOGS_RST_GPIO_Port  GPIOA
+  #define DOGS_RST_Pin        LL_GPIO_PIN_5
+#endif
+#ifndef DOGS_CS_Pin
+  #define DOGS_CS_GPIO_Port   GPIOC
+  #define DOGS_CS_Pin         LL_GPIO_PIN_0
+#endif
 
 /*Pin Access (LL, direct BSRR Writing*/
 static inline void WD_MOSI(int v){ v ? LL_GPIO_SetOutputPin(DOGS_MOSI_GPIO_Port, DOGS_MOSI_Pin): LL_GPIO_ResetOutputPin(DOGS_MOSI_GPIO_Port, DOGS_MOSI_Pin); }
