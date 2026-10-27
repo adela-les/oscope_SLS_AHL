@@ -82,5 +82,67 @@ static void Display_Reset_And_Init(void)
 	write_cmd(0xFA);
 	write_cmd(0x90);
 	write_cmd(0xAF);
+}
 
+/*Send frame buffer*/
+static void Display_Send_Frame(void)
+{
+	xSemaphoreTake(fb_mutex, portMAX_DELAY);
+	for (uint8_t page=0; page<WaveD_Pages; page++)
+	{
+		write_cmd(0xB0 | page); /*Page Address*/
+		write_cmd(0x10 | ((COLD_OFFSET>>4) & 0x0F)); /*Column MSB*/
+		write_cmd(0x00 | (COL_OFFSET &0x0F)); /*Column LSB*/
+
+		WD_CS(0);
+		WD_CD(1);
+
+		for (uint8_t x=0; x<WaveD_W; x++)
+		{
+			Spi_Byte(fb[page][x]);
+		}
+		WD_CS(1);
+	}
+	xSemaphoreGive(fb_mutex);
+}
+
+/*Public API*/
+void WaveD_Init(void)
+{
+	memset(fb, 0, sizeof fb)
+	fb_mutex = xSemaphoreCreateMutex();
+}
+
+void WaveD_Task(void)
+{
+	Wave_Task_Handle = xTaskGetCurrentTaskHandle();
+	Display_Reset_And_Init();
+	Display_Send_Frame();
+
+	for(;;)
+	{
+		ulTaskNotifyTake(pdTRUE, portMAX_DElAY);
+		Display_Send_Frame();
+	}
+}
+
+void WaveD_Clear(void)
+{
+	xSemaphoreTake(fb_mutex, portMAX_DELAY);
+	memset(fb,0,sizeof fb);
+	xSemaphoreGive(fb_mutex);
+}
+
+void WaveD_Set_Pixel(uint8_t x,uint8_t y, bool on)
+{
+	if (x>= WaveD_W || y>=WaveD_H) return;
+	xSemaphoreTake(fb_mutex, portMAX_DELAY);
+	if (on) fb[y>>3][x] |= (uint8_t)(1u<<(y & 7u));
+	else fb[y>>3][x] &= (uint8_t)~(1u<<(y & 7u));
+	xSemaphoreGive(fb_mutex);
+}
+
+void WaveD_Flush(void)
+{
+	if (Wave_Task_Handle) xTaskNotifyGive(Wave_Task_Handle); /*Ignore until task starts*/
 }
