@@ -129,6 +129,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
+	WaveD_Clear();
+
+	for (uint8_t x=0; x<WaveD_W; x++)
+	{
+		uint8_t y = (uint8_t)((x * (WaveD_H-1u)) / (WaveD_W - 1u));
+		WaveD_Set_Pixel(x, y, true);
+	}
+
+	WaveD_Flush();
   /* Infinite loop */
   for(;;)
   {

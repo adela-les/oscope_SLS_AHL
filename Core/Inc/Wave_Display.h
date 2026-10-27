@@ -13,7 +13,7 @@
 
 #define WaveD_W 102u /*Width*/
 #define WaveD_H 64u /*Height*/
-#define WaveD_Pages (WaveD_H / 8u) /*8 pages of 8 rows*/
+#define WaveD_PAGES (WaveD_H / 8u) /*8 pages of 8 rows*/
 
 void WaveD_Init(void);  /*Reset, Turn Display On, Intialize*/
 void WaveD_Task_Body(void); /*Call the CubeMX display task*/

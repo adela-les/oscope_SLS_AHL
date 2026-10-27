@@ -9,6 +9,7 @@
 #include "app_freertos.h"
 #include "Wave_Display.h"
 #include "stm32u0xx_ll_gpio.h"
+#include "stm32u0xx_ll_bus.h"
 #include "task.h"
 #include "semphr.h"
 #include <string.h>
@@ -55,7 +56,7 @@ static inline void WD_RST(int v){ v ? LL_GPIO_SetOutputPin(DOGS_RST_GPIO_Port, D
 static inline void WD_CS(int v){ v ? LL_GPIO_SetOutputPin(DOGS_CS_GPIO_Port, DOGS_CS_Pin): LL_GPIO_ResetOutputPin(DOGS_CS_GPIO_Port, DOGS_CS_Pin); }
 
 /*State*/
-static uint8_t fb[WaveD_Paged][WaveD_W]; /*8 pages x 102 columns*/
+static uint8_t fb[WaveD_PAGES][WaveD_W]; /*8 pages x 102 columns*/
 static SemaphoreHandle_t fb_mutex;
 static TaskHandle_t Wave_Task_Handle;
 
@@ -90,30 +91,30 @@ static void Display_Reset_And_Init(void)
 	WD_RST(1);
 	vTaskDelay(pdMS_TO_TICKS(10));
 
-	write_cmd(0x40);
-	write_cmd(SEG_CMD);
-	write_cmd(COM_CMD);
-	write_cmd(0xA4);
-	write_cmd(0xA6);
-	write_cmd(0xA2);
-	write_cmd(0x2F);
-	write_cmd(0x27);
-	write_cmd(0x81);
-	write_cmd(0x10);
-	write_cmd(0xFA);
-	write_cmd(0x90);
-	write_cmd(0xAF);
+	Write_CMD(0x40);
+	Write_CMD(SEG_CMD);
+	Write_CMD(COM_CMD);
+	Write_CMD(0xA4);
+	Write_CMD(0xA6);
+	Write_CMD(0xA2);
+	Write_CMD(0x2F);
+	Write_CMD(0x27);
+	Write_CMD(0x81);
+	Write_CMD(0x10);
+	Write_CMD(0xFA);
+	Write_CMD(0x90);
+	Write_CMD(0xAF);
 }
 
 /*Send frame buffer*/
 static void Display_Send_Frame(void)
 {
 	xSemaphoreTake(fb_mutex, portMAX_DELAY);
-	for (uint8_t page=0; page<WaveD_Pages; page++)
+	for (uint8_t page=0; page<WaveD_PAGES; page++)
 	{
-		write_cmd(0xB0 | page); /*Page Address*/
-		write_cmd(0x10 | ((COLD_OFFSET>>4) & 0x0F)); /*Column MSB*/
-		write_cmd(0x00 | (COL_OFFSET &0x0F)); /*Column LSB*/
+		Write_CMD(0xB0 | page); /*Page Address*/
+		Write_CMD(0x10 | ((COL_OFFSET>>4) & 0x0F)); /*Column MSB*/
+		Write_CMD(0x00 | (COL_OFFSET &0x0F)); /*Column LSB*/
 
 		WD_CS(0);
 		WD_CD(1);
@@ -130,11 +131,11 @@ static void Display_Send_Frame(void)
 /*Public API*/
 void WaveD_Init(void)
 {
-	memset(fb, 0, sizeof fb)
+	memset(fb, 0, sizeof fb);
 	fb_mutex = xSemaphoreCreateMutex();
 }
 
-void WaveD_Task(void)
+void WaveD_Task_Body(void)
 {
 	Wave_Task_Handle = xTaskGetCurrentTaskHandle();
 	Display_Reset_And_Init();
@@ -142,7 +143,7 @@ void WaveD_Task(void)
 
 	for(;;)
 	{
-		ulTaskNotifyTake(pdTRUE, portMAX_DElAY);
+		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 		Display_Send_Frame();
 	}
 }
