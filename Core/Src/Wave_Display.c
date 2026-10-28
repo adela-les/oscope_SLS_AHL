@@ -128,6 +128,8 @@ static void Display_Send_Frame(void)
 	xSemaphoreGive(fb_mutex);
 }
 
+
+
 /*Public API*/
 void WaveD_Init(void)
 {

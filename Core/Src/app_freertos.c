@@ -137,6 +137,7 @@ void Transmit_Spi()
 		/*TODO*/
 
 }
+	osDelay(200);
 	WaveD_Clear();
 
 	for (uint8_t x=0; x<WaveD_W; x++)
