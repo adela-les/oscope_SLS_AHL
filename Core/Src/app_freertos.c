@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Wave_Display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +90,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+	WaveD_Init();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -136,6 +137,16 @@ void Transmit_Spi()
 		/*TODO*/
 
 }
+	WaveD_Clear();
+
+	for (uint8_t x=0; x<WaveD_W; x++)
+	{
+		uint8_t y = (uint8_t)((x * (WaveD_H-1u)) / (WaveD_W - 1u));
+		WaveD_Set_Pixel(x, y, true);
+	}
+
+	WaveD_Flush();
+  /* Infinite loop */
   for(;;)
   {
     osDelay(1);
@@ -154,15 +165,15 @@ void WaveD_Task(void *argument)
 {
   /* USER CODE BEGIN myTask02 */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  WaveD_Task_Body();
   /* USER CODE END myTask02 */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+void Transmit_Spi()
+{
+		/*TODO*/
+}
 /* USER CODE END Application */
 
