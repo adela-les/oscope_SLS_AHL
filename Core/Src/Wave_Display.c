@@ -25,51 +25,39 @@
   #define COL_OFFSET  0u
 #endif
 
-#define WaveD_Delay() do{} while(0)
-
-#ifndef DOGS_MOSI_Pin
-  #define DOGS_MOSI_GPIO_Port GPIOA
-  #define DOGS_MOSI_Pin       LL_GPIO_PIN_7
-#endif
-#ifndef DOGS_CLK_Pin
-  #define DOGS_CLK_GPIO_Port  GPIOA
-  #define DOGS_CLK_Pin        LL_GPIO_PIN_1
-#endif
-#ifndef DOGS_CD_Pin
-  #define DOGS_CD_GPIO_Port   GPIOA
-  #define DOGS_CD_Pin         LL_GPIO_PIN_4
-#endif
-#ifndef DOGS_RST_Pin
-  #define DOGS_RST_GPIO_Port  GPIOA
-  #define DOGS_RST_Pin        LL_GPIO_PIN_5
-#endif
-#ifndef DOGS_CS_Pin
-  #define DOGS_CS_GPIO_Port   GPIOC
-  #define DOGS_CS_Pin         LL_GPIO_PIN_0
-#endif
+#define WD_CD_PORT GPIOA
+#define WD_CD_PIN LL_GPIO_PIN_4
+#define WD_RST_PORT GPIOA
+#define WD_RST_PIN LL_GPIO_PIN_5
+#define WD_CS_PORT GPIOC
+#define WD_CS_PIN LL_GPIO_PIN_0
 
 /*Pin Access (LL, direct BSRR Writing*/
-static inline void WD_MOSI(int v){ v ? LL_GPIO_SetOutputPin(DOGS_MOSI_GPIO_Port, DOGS_MOSI_Pin): LL_GPIO_ResetOutputPin(DOGS_MOSI_GPIO_Port, DOGS_MOSI_Pin); }
-static inline void WD_CLK(int v){ v ? LL_GPIO_SetOutputPin(DOGS_CLK_GPIO_Port, DOGS_CLK_Pin): LL_GPIO_ResetOutputPin(DOGS_CLK_GPIO_Port, DOGS_CLK_Pin); }
-static inline void WD_CD(int v){ v ? LL_GPIO_SetOutputPin(DOGS_CD_GPIO_Port, DOGS_CD_Pin): LL_GPIO_ResetOutputPin(DOGS_CD_GPIO_Port, DOGS_CD_Pin); }
-static inline void WD_RST(int v){ v ? LL_GPIO_SetOutputPin(DOGS_RST_GPIO_Port, DOGS_RST_Pin): LL_GPIO_ResetOutputPin(DOGS_RST_GPIO_Port, DOGS_RST_Pin); }
-static inline void WD_CS(int v){ v ? LL_GPIO_SetOutputPin(DOGS_CS_GPIO_Port, DOGS_CS_Pin): LL_GPIO_ResetOutputPin(DOGS_CS_GPIO_Port, DOGS_CS_Pin); }
+static inline void WD_CD(int v){ v ? LL_GPIO_SetOutputPin(WD_CD_PORT, WD_CD_PIN): LL_GPIO_ResetOutputPin(WD_CD_PORT, WD_CD_PIN); }
+static inline void WD_RST(int v){ v ? LL_GPIO_SetOutputPin(WD_RST_PORT, WD_RST_PIN): LL_GPIO_ResetOutputPin(WD_RST_PORT, WD_RST_PIN); }
+static inline void WD_CS(int v){ v ? LL_GPIO_SetOutputPin(WD_CS_PORT, WD_CS_PIN): LL_GPIO_ResetOutputPin(WD_CS_PORT, WD_CS_PIN); }
 
 /*State*/
 static uint8_t fb[WaveD_PAGES][WaveD_W]; /*8 pages x 102 columns*/
 static SemaphoreHandle_t fb_mutex;
 static TaskHandle_t Wave_Task_Handle;
 
+/*set as Write only, faster clock, and turn peripheral on.*/
+static void WD_SPI_Start(void)
+{
+	LL_SPI_Disable(SPI1);
+	LL_SPI_SetTransferDirection(SPI1, LL_SPI_HALF_DUPLEX_TX); /*Write Only*/
+	LL_SPI_SetBaudRatePrescaler(SPI1, LL_SPI_BAUDRATEPRESCALER_DIV8);
+	LL_SPI_Enable(SPI1);
+}
+
 /*Low-level SPI(mode 3, MSB First, Write-only)*/
 static void Spi_Byte(uint8_t b)
 {
-	for (int i=7; i>=0; i--){
-		WD_CLK(0);
-		WD_MOSI((b>>i)&1);
-		WaveD_Delay();
-		WD_CLK(1); /*Data will sample on rising edge*/
-		WaveD_Delay();
-	}
+	while (!LL_SPI_IsActiveFlag_TXE(SPI1)){}
+	LL_SPI_TransmitData8(SPI1, b);
+	while (LL_SPI_GetTxFIFOLevel(SPI1) != LL_SPI_TX_FIFO_EMPTY) {}
+	while (LL_SPI_IsActiveFlag_BSY(SPI1)) {}
 }
 
 static void Write_CMD(uint8_t c)
@@ -83,8 +71,7 @@ static void Write_CMD(uint8_t c)
 /*Init: datasheet sequence*/
 static void Display_Reset_And_Init(void)
 {
-	WD_CLK(1); /*Idle Levels*/
-	WD_CS(1);
+	WD_CS(1); /*Idle Levels*/
 
 	WD_RST(0);
 	vTaskDelay(pdMS_TO_TICKS(10));
@@ -133,6 +120,7 @@ static void Display_Send_Frame(void)
 /*Public API*/
 void WaveD_Init(void)
 {
+	WD_SPI_Start();
 	memset(fb, 0, sizeof fb);
 	fb_mutex = xSemaphoreCreateMutex();
 }
