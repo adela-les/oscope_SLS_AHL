@@ -128,10 +128,13 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
+	Character_Display_Init();
+
   /* Infinite loop */
 void Transmit_Spi()
 {
 		/*TODO*/
+
 }
   for(;;)
   {
