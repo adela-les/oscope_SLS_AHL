@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Wave_Display.h"
+#include "Character_Display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +48,7 @@ typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
-uint32_t MyBufferTask00[ 128 ];
+uint32_t MyBufferTask00[ 256 ];
 osStaticThreadDef_t MycontrolBlocTask00;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
@@ -90,7 +91,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
-	WaveD_Init();
+	//WaveD_Init();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -130,13 +131,11 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
 	Character_Display_Init();
+	Character_Display_ShowZero();
+
 
   /* Infinite loop */
-void Transmit_Spi()
-{
-		/*TODO*/
 
-}
 	osDelay(200);
 	WaveD_Clear();
 
@@ -147,10 +146,11 @@ void Transmit_Spi()
 	}
 
 	WaveD_Flush();
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(500);
   }
   /* USER CODE END defaultTask */
 }
@@ -166,6 +166,11 @@ void WaveD_Task(void *argument)
 {
   /* USER CODE BEGIN myTask02 */
   /* Infinite loop */
+	for(;;)
+	{
+		osDelay(1000);
+	}
+
   WaveD_Task_Body();
   /* USER CODE END myTask02 */
 }
