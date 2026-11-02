@@ -10,95 +10,74 @@
 #include "Character_Display.h"
 
 
-void Character_Display_Command(uint8_t i)
+void DelayLoop(void)
 {
-
-LL_GPIO_ResetOutputPin(GPIOB, (1<<9));
-LL_GPIO_ResetOutputPin(GPIOB, (1<<8));
-
-LL_GPIO_SetOutputPin(GPIOB,0x0);
- uint8_t P1 = i; //put data on output Port
- LL_GPIO_ResetOutputPin(GPIOB,(1<<10)); //D/I=LOW : send instruction
- LL_GPIO_ResetOutputPin(GPIOB,(1<<9)); //R/W=LOW : Write
- LL_GPIO_SetOutputPin(GPIOB,(1<<8)); //Set Clock Pin High
-
- LL_GPIO_ResetOutputPin(GPIOB, 0x00FF | (1 << 8) | (1 << 10));
-
- if(P1 == 0x30)
- {
- LL_GPIO_SetOutputPin(GPIOB,(1<<2)); //Hard code setting 2
- LL_GPIO_SetOutputPin(GPIOB,(1<<3)); //Hard Code setting 3
- osDelay(1); //enable pulse width >= 300ns
-
+	for(uint16_t n = 0; n<100;n++)
+	{
+		;
+	}
 }
 
 
- else if(P1 == 0x10)
- {
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<4)); //Hard code setting
+void Character_Display_Command(uint8_t i)
+{
+	LL_GPIO_ResetOutputPin(GPIOB, LCD_DATA_MASK | LCD_RS_PIN);
+	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN | LCD_RW_PIN);
+    LL_GPIO_SetOutputPin(GPIOB, i);            // data on PB0-7 (RS=0, RW=0)
 
- }
-
- else if(P1 == 0x0C)
- {
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<2)); //Hard code setting
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<1)); //Hard code setting
- }
-
- else if(P1 == 0x06)
- {
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<0)); //Hard code setting
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<1)); //Hard code setting
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<2)); //Hard code setting
- }
-
- else //0x38
- {
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<2)); //Hard code setting
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<3)); //Hard code setting
-	 LL_GPIO_SetOutputPin(GPIOB,(1<<5)); //Hard code setting
-
- }
-
- LL_GPIO_ResetOutputPin(GPIOB,(1<<8)); //Set Clock Pin Low
-
+    DelayLoop();                                // setup time before E rises
+    LL_GPIO_SetOutputPin(GPIOC, LCD_E_PIN);    // E high
+    DelayLoop();                                 // pulse width
+    LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);  // E low: data latched
+    DelayLoop();                                // let the command execute
 }
 
 void Character_Display_Write(uint8_t i)
 {
+    LL_GPIO_ResetOutputPin(GPIOB, LCD_DATA_MASK | LCD_RS_PIN);
+    LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN | LCD_RW_PIN);
+    LL_GPIO_SetOutputPin(GPIOB, i | LCD_RS_PIN);   // data + RS=1 (RW stays 0)
 
- uint8_t P1 = i; //put data on output Port
-
- LL_GPIO_ResetOutputPin(GPIOB, 0x00FF | (1 << 8) | (1 << 10));
-
- LL_GPIO_ResetOutputPin(GPIOB, (1<<9)); //reset
- LL_GPIO_ResetOutputPin(GPIOB, (1<<8));
-
- LL_GPIO_ResetOutputPin(GPIOB,(1<<10)); //D/I=HIGH : send data
- LL_GPIO_SetOutputPin(GPIOB,(1<<9)); //R/W=LOW : Write
- LL_GPIO_SetOutputPin(GPIOB,(1<<8)); //Set Clock Pin High
- osDelay(1); //enable pulse width >= 300ns
- LL_GPIO_ResetOutputPin(GPIOB,(1<<8)); //Set Clock Pin Low
-
- //at some point, 0 is 1<<0 and 1<<1
-
+    DelayLoop();
+    LL_GPIO_SetOutputPin(GPIOC, LCD_E_PIN);
+    DelayLoop();
+    LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);
+    DelayLoop();
 }
-
 
 void Character_Display_Init(void)
 {
- LL_GPIO_ResetOutputPin(GPIOB,(0<<8)); //Set Clock Pin Low
- osDelay(100); //Wait >40 msec after power is applied
- Character_Display_Command(0x30); //command 0x30 = Wake up
- osDelay(30); //must wait 5ms, busy flag not available
- Character_Display_Command(0x30); //command 0x30 = Wake up #2
- osDelay(10); //must wait 160us, busy flag not available
- Character_Display_Command(0x30); //command 0x30 = Wake up #3
- osDelay(10); //must wait 160us, busy flag not available
- Character_Display_Command(0x38); //Function set: 8-bit/2-line
- Character_Display_Command(0x10); //Set cursor
- Character_Display_Command(0x0c); //Display ON; Cursor ON
- Character_Display_Command(0x06); //Entry mode set
+    LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);
+    for(uint32_t n = 0; n<300000;n++)
+    	{
+    		;
+    	}                        // >40 ms after power-up
+
+    Character_Display_Command(0x30);    // wake up #1
+    for(uint32_t n = 0; n<10000;n++)
+    	{
+    		;
+    	}
+    Character_Display_Command(0x30);    // wake up #2
+    for(uint32_t n = 0; n<10000;n++)
+    	{
+    		;
+    	}
+    Character_Display_Command(0x30);    // wake up #3
+    DelayLoop();
+
+    Character_Display_Command(0x38);    // 8-bit, 2 lines
+    Character_Display_Command(0x10);    // display off
+    Character_Display_Command(0x01);    // clear display
+    DelayLoop();                          // clear needs ~1.5 ms
+    Character_Display_Command(0x0C);    // entry mode: increment
+    Character_Display_Command(0x06);    // display on CHANGED
+}
+
+void Character_Display_ShowZero(void)
+{
+    //Character_Display_Command(0x80);    // cursor to row 0, col 0
+    Character_Display_Write('A');       // 0x30
 }
 
 
