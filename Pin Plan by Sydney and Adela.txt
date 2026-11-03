@@ -18,3 +18,5 @@ Single Channel Scope:
 
 Debug:
 Multiple GPIO Pins; TBD
+
+PC0 and PC1 and PA13 and PA 14 are NOT available to us
