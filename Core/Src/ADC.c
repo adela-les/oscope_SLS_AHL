@@ -43,6 +43,8 @@ void Scope_ADC_Init(void)
 {
 	/*Longer sampling time so higher impedance source reads correctly (12.5 cycles)*/
 	LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADCSAMPLINGTIME_COMMON_1, LL_ADC_SAMPLINGTIME_12CYCLES_5);
+
+	/*Calibrate, then Enable)*/
 	LL_ADC_StartCalibration(ADC1);
 	while (LL_ADC_IsCalibrationOnGoing(ADC1)) {}
 
@@ -52,4 +54,47 @@ void Scope_ADC_Init(void)
 
 	Scope_ADC_SetRate(SCOPE_DEFAULT_RATE);
 }
+
+uint16_t Scope_ADC_ReadOnce(void)
+{
+	return ADC_Convert();
+}
+
+/*Sample Timer*/
+void Scope_ADC_SetRate(uint32_t hz)
+{
+	if (hz < 1u)
+	{
+		hz = 1u;
+	}
+	if (hz > Scope_Max_Rate)
+	{
+		hz = Scope_Max_Rate;
+	}
+
+	uint32_t ticks = Scope_Time_Clk_HZ / hz; /*Timer counts per sample*/
+	uint32_t psc = (ticks-1u) / 65536u; /*Make ARR fit in 16 bits*/
+	uint32_t arr = (ticks / (psc + 1u)) - 1u;
+
+	LL_TIM_SetPrescaler(Scope_Tim, psc);
+	LL_TIM_SetAutoReload(Scope_Tim, arr);
+	LL_TIM_Generate_Event_UPDATE(Scope_Tim); /*Load psc/arr now*/
+	LL_TIM_ClearFlag_UPDATE(Scope_Tim); /*clear the flag that just set*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
