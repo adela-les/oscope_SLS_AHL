@@ -82,9 +82,20 @@ void Scope_ADC_SetRate(uint32_t hz)
 	LL_TIM_ClearFlag_UPDATE(Scope_Tim); /*clear the flag that just set*/
 }
 
+static void Capture_Start(void)
+{
+	idx = 0u;
+	LL_TIM_SetCounter(Scope_Tim, 0u);
+	LL_TIM_ClearFlag_UPDATE(Scope_Tim);
+	LL_TIM_EnableIT_UPDATE(Scope_Tim);
+	LL_TIM_EnableCounter(Scope_Tim);
+}
 
-
-
+static void Capture_Stop(void)
+{
+	LL_TIM_DisableCounter(Scope_Tim);
+	LL_TIM_DisableIT_UPDATE(Scope_Tim);
+}
 
 
 
