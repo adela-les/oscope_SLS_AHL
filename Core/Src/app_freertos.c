@@ -135,7 +135,6 @@ void StartDefaultTask(void *argument)
 
 
   /* Infinite loop */
-
 	osDelay(200);
 	WaveD_Clear();
 

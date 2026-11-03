@@ -15,11 +15,13 @@ Character Display:
 1 Power Pin (5V); 5V
 
 Inputs:
-6 Input Pins for Encoders; E1:PC2 & PC3  E2:PC10 & PC11  E3:PC13 & PC14
-1 Input Pin for Button; PC15
+6 Input Pins for Encoders; E1:PC2 & PC3  E2:PC10 & PC11  E3:PC14 & PC15
+1 Input Pin for Button; PC13
 
 Single Channel Scope:
 1 ADC Pin; PA0
 
 Debug:
 Multiple GPIO Pins; TBD
+
+PC0 and PC1 and PA13 and PA 14 are NOT available to us
