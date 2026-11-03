@@ -15,10 +15,11 @@ void Character_Display_ShowZero(void);
 void DelayLoop(void);
 
 #define A_Up 0x31
-#define LCD_DATA_MASK  0x00FF      // PB0-7  -> DB0-DB7
-#define LCD_E_PIN      (1 << 8)    // PB8    -> E
-#define LCD_RW_PIN     (1 << 9)    // PB9    -> R/W
-#define LCD_RS_PIN     (1 << 10)   // PB10   -> RS
+#define LCD_DATA_MASK  0x03FC      // PB0-7  -> DB0-DB7
+#define LCD_E_PIN      (1 << 10)    // PC8    -> E
+#define LCD_RW_PIN     (1 << 11)    // PC9    -> R/W
+#define LCD_RS_PIN     (1 << 12)   // PB10   -> RS
+#define LCD_DATA_SHIFT  2
 
 /*PINOUT
  * PB0-7 ARE D FOR SENDING BITS
