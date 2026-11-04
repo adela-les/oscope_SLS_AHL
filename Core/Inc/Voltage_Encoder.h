@@ -14,6 +14,8 @@ int8_t Raise_Lower_Voltage(void);
 int8_t Read_Input(void);
 
 static enum btn {RISE, HIGH, H_BOUNCE_DELAY, FALL, LOW, L_BOUNCE_DELAY};
-#define count 1
+#define count 15
+
+
 
 #endif /* INC_VOLTAGE_ENCODER_H_ */

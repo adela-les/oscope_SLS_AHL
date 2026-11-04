@@ -5,6 +5,8 @@
  *      Author: sydney
  */
 
+//TODO ERASE LINE COMMENTS
+
 #ifndef INC_ADC_H_
 #define INC_ADC_H_
 
@@ -18,7 +20,7 @@ void Scope_ADC_SetRate(uint32_t hz); /*Samples per second (1 to 100000). Take ef
 
 uint16_t Scope_Task_Body(void); /*One blocking conversion, 0 to 1023 (for bring-up tests)*/
 
-void Scope_Task_Body(void); /*Call from the scope task. Captures, draws, repeats*/
+//void Scope_Task_Body(void); /*Call from the scope task. Captures, draws, repeats*/
 
 void Scope_ADC_Timer_ISR(void); /*Call from the sample timer's IRQ handler*/
 
