@@ -97,8 +97,57 @@ static void Capture_Stop(void)
 	LL_TIM_DisableIT_UPDATE(Scope_Tim);
 }
 
+/*call from the timer's IRQ handler*/
+void Scope_ADC_Timer_ISR(void)
+{
+	BaseType_t woken = pdFALSE;
 
+	if(!LL_TIM_IsActiveFlag_UPDATE(Scope_Tim))
+	{
+		return;
+	}
 
+	LL_TIM_ClearFlag_UPDATE(Scope_Tim);
+
+	if (idx < WaveD_W)
+	{
+		buf[idx] = ADC_Convert();
+		idx++;
+
+		if (idx >= WaveD_W)
+		{
+			Capture_Stop();
+			if (Scope_Task) vTaskNotifyGiveFromISR(Scope_Task, &woken);
+			portYIELD_FROM_ISR(woken);
+		}
+	}
+}
+
+/*Drawing*/
+static uint8_t Sample_To_Y(uint16_t v)
+{
+	return (uint8_t)((WaveD_H - 1u) - (((uint 32_t)v * (WaveD_H - 1u)) / Scope_ADC_Max));
+}
+
+static void Draw_Trace(void)
+{
+	uint8_t Y_Prev = Sample_To_Y(buf[0]);
+
+	WaveD_Clear();
+	for (uint8_t x=0; x < WaveD_W; x++)
+	{
+		uint8_t Y = Sample_To_Y(buf[x]);
+		uint8_t Lo = (Y < Y_Prev) ? Y : Y_Prev; /*Joins this point to the last*/
+		uint8_t Hi = (Y < Y_Prev) ? Y : Y_Prev;
+
+		for (uint8_t yy = Lo; yy <= Hi; yy++)
+		{
+			WaveD_Set_Pixel(x, yy, true);
+		}
+		Y_Prev = Y;
+	}
+	WaveD_Flush();
+}
 
 
 
