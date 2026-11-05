@@ -149,7 +149,19 @@ static void Draw_Trace(void)
 	WaveD_Flush();
 }
 
+/*Scope Task*/
+void Scope_Task_Body(void)
+{
+	Scope_Task = xTaskGetCurrentTaskHandle();
+	osDelay(200); /*Allows display to finish init*/
 
+	for (;;)
+	{
+		Capture_Start();
+		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /*sleep until ISR says buffer is full*/
+		Draw_Trace();
+	}
+}
 
 
 
