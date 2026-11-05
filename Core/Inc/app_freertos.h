@@ -73,7 +73,7 @@ void Task_Character_Display(void *argument);
 void Encoder_Task(void *argument);
 void Trigger_Update_Task(void *argument);
 void Time_Base_Task(void *argument);
-void TimeBase_Char_Display_Task(void *argument);
+void Trigger_Encoder_Task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 

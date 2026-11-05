@@ -4,7 +4,7 @@
 // *  Created on: Oct 29, 2026
 // *      Author: sydney
 // */
-//TODO USE CTRL SHIFT C TO TURN OFF LINE COMMENTS
+//
 //#include "main.h"
 //#include "app_freertos.h"
 //#include "ADC.h"
@@ -20,7 +20,7 @@
 //
 //static volatile uint16_t buf[WaveD_W]; /*One Sample per display column*/
 //static volatile uint16_t idx;
-//static TaskHande_t scope_task;
+//static TaskHandle_t scope_task;
 //
 ///*ADC*/
 //static uint16_t ADC_Convert(void)

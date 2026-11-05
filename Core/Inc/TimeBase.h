@@ -8,7 +8,9 @@
 #ifndef SRC_TIMEBASE_H_
 #define SRC_TIMEBASE_H_
 
-int8_t Raise_Lower_Time(void);
+uint16_t Raise_Lower_Time(void);
 int8_t read_time(void);
+
+#define start 310
 
 #endif /* SRC_TIMEBASE_H_ */

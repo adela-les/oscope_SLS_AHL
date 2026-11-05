@@ -27,6 +27,7 @@
 #include "Voltage_Encoder.h"
 #include "Trigger_Button.h"
 #include "TimeBase.h"
+#include "Trigger_Encoder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -83,7 +84,7 @@ const osThreadAttr_t myTask03_attributes = {
   .stack_size = sizeof(MyBufferTask03),
   .cb_mem = &MycontrolBlocTask03,
   .cb_size = sizeof(MycontrolBlocTask03),
-  .priority = (osPriority_t) osPriorityHigh3,
+  .priority = (osPriority_t) osPriorityHigh7,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
@@ -119,11 +120,11 @@ const osThreadAttr_t myTask06_attributes = {
   .stack_size = sizeof(MyBufferTask06),
   .cb_mem = &MycontrolBlocTask06,
   .cb_size = sizeof(MycontrolBlocTask06),
-  .priority = (osPriority_t) osPriorityAboveNormal5,
+  .priority = (osPriority_t) osPriorityHigh5,
 };
 /* Definitions for myTask07 */
 osThreadId_t myTask07Handle;
-uint32_t MyBufferTask07[ 128 ];
+uint32_t MyBufferTask07[ 256 ];
 osStaticThreadDef_t MycontrolBlocTask07;
 const osThreadAttr_t myTask07_attributes = {
   .name = "myTask07",
@@ -187,7 +188,7 @@ void MX_FREERTOS_Init(void) {
   myTask06Handle = osThreadNew(Time_Base_Task, NULL, &myTask06_attributes);
 
   /* creation of myTask07 */
-  myTask07Handle = osThreadNew(TimeBase_Char_Display_Task, NULL, &myTask07_attributes);
+  myTask07Handle = osThreadNew(Trigger_Encoder_Task, NULL, &myTask07_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -263,14 +264,18 @@ void Task_Character_Display(void *argument)
 	extern uint16_t current;
 	extern uint16_t time;
 	extern uint8_t mode;
+	extern uint16_t start_point;
 	uint8_t new_mode = 0;
+	uint8_t new_current = 0;
+	uint8_t new_time = 0;
+	uint8_t new_start = 0;
 	Character_Display_Init();
 	Character_Display_ShowZero();
+
   /* Infinite loop */
   for(;;)
   {
 	  osDelay(50);
-	  Update_Character_Display_Voltage(current);
 	  // TODO, MAKE GO FASTER Update_Character_Display_Time(time);
 
 	  if(new_mode!=mode)
@@ -278,7 +283,25 @@ void Task_Character_Display(void *argument)
 		  Update_Character_Display_Trigger(mode);
 	  }
 
+	  if(new_current!=current)
+	  {
+		  Update_Character_Display_Voltage(current);
+	  }
+
+	  if(new_time!=time)
+	  {
+		  Update_Character_Display_Time(time);
+	  }
+
+	  if(new_start!=start_point)
+	  {
+		  Update_Character_Display_Volt_Start(start_point);
+	  }
+
 	  new_mode = mode;
+	  new_time = time;
+	  new_current = current;
+	  new_start = start_point;
 
   }
   /* USER CODE END myTask03 */
@@ -341,21 +364,20 @@ void Time_Base_Task(void *argument)
   /* USER CODE END myTask06 */
 }
 
-/* USER CODE BEGIN Header_TimeBase_Char_Display_Task */
+/* USER CODE BEGIN Header_Trigger_Encoder_Task */
 /**
 * @brief Function implementing the myTask07 thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_TimeBase_Char_Display_Task */
-void TimeBase_Char_Display_Task(void *argument)
+/* USER CODE END Header_Trigger_Encoder_Task */
+void Trigger_Encoder_Task(void *argument)
 {
   /* USER CODE BEGIN myTask07 */
-	// TODO extern uint16_t time;
   /* Infinite loop */
   for(;;)
   {
-	//TODO Update_Character_Display_Time(time);
+	Raise_Lower_Start();
     osDelay(1);
   }
   /* USER CODE END myTask07 */

@@ -10,7 +10,7 @@
 
 #include "main.h"
 
-int8_t Raise_Lower_Voltage(void);
+uint16_t Raise_Lower_Voltage(void);
 int8_t Read_Input(void);
 
 static enum btn {RISE, HIGH, H_BOUNCE_DELAY, FALL, LOW, L_BOUNCE_DELAY};

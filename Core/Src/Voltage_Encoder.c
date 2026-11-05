@@ -79,7 +79,7 @@ int8_t Read_Input()
     return input;
 }
 
-int8_t Raise_Lower_Voltage(void)
+uint16_t Raise_Lower_Voltage(void)
 {
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {

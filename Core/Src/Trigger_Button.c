@@ -68,7 +68,7 @@ int8_t Button_Read()
 
 int8_t Rise_Or_Fall(void)
 {
-	 for(uint16_t i = 0; i < 123; i++)
+	 for(uint16_t i = 0; i < 1234; i++)
 		      {
 		          ;
 		      }

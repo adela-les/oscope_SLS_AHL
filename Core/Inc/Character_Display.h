@@ -17,6 +17,7 @@ void Character_Display_SetCursor(uint8_t row, uint8_t col);
 void Update_Character_Display_Voltage(uint16_t new_voltage);
 void Update_Character_Display_Trigger(uint8_t trigger);
 void Update_Character_Display_Time(uint16_t new_time);
+void Update_Character_Display_Volt_Start(uint16_t new_start);
 
 #define A_Up 0x31
 #define LCD_DATA_MASK  0x03FC      // PB0-7  -> DB0-DB7

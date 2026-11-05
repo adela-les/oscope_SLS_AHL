@@ -11,7 +11,7 @@
 #include "main.h"
 #include "app_freertos.h"
 
-volatile uint16_t time = count;
+volatile uint16_t time = start;
 
 int8_t read_time()
 {
@@ -81,7 +81,7 @@ int8_t read_time()
     return input;
 }
 
-int8_t Raise_Lower_Time(void)
+uint16_t Raise_Lower_Time(void)
 {
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {
@@ -90,14 +90,24 @@ int8_t Raise_Lower_Time(void)
 
 	  int8_t input = read_time();
 
-	  if((input == 1) && (time<30))
+	  if((input == 1) && (time<100))
 	  {
-		  time++;
+		  time += 3;
 	  }
 
-	  if((input == -1) && (time>0))
+	  else if((input == 1) && (time<1000) && (time > 99))
 	  {
-		  time--;
+		  time += 30;
+	  }
+
+	  if((input == -1) && (time>99))
+	  {
+		  time -= 30;
+	  }
+
+	  else if((input == -1) && (time<100) && (time > 1))
+	  {
+		  time -= 3;
 	  }
 
 	  return time;
