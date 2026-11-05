@@ -16,7 +16,7 @@ void Scope_ADC_Init(void); /*Calibrate and enable ADC, set the default sample ra
 
 void Scope_ADC_SetRate(uint32_t hz); /*Samples per second (1 to 100000). Take effect at the next capture*/
 
-uint16_t Scope_Task_Body(void); /*One blocking conversion, 0 to 1023 (for bring-up tests)*/
+uint16_t Scope_ADC_ReadOnce(void); /*One blocking conversion, 0 to 1023 (for bring-up tests)*/
 
 void Scope_Task_Body(void); /*Call from the scope task. Captures, draws, repeats*/
 
