@@ -211,12 +211,11 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
-
-  /* Infinite loop */
+	Character_Display_Init();
+	Character_Display_ShowZero();
 
 	Scope_Task_Body();
 
-  /* Infinite loop */
   /* USER CODE END defaultTask */
 }
 
