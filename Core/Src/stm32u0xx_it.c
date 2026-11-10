@@ -102,6 +102,19 @@ void HardFault_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles TIM7 and LPTIM2 global Interrupt (combined with EXTI 32).
+  */
+void TIM7_LPTIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_LPTIM2_IRQn 0 */
+
+  /* USER CODE END TIM7_LPTIM2_IRQn 0 */
+  /* USER CODE BEGIN TIM7_LPTIM2_IRQn 1 */
+
+  /* USER CODE END TIM7_LPTIM2_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM16 global interrupt.
   */
 void TIM16_IRQHandler(void)
