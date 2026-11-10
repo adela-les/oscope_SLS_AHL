@@ -28,6 +28,7 @@
 #include "Trigger_Button.h"
 #include "TimeBase.h"
 #include "Trigger_Encoder.h"
+#include "ADC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -156,6 +157,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
 	WaveD_Init();
+	Scope_ADC_Init();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -176,19 +178,19 @@ void MX_FREERTOS_Init(void) {
   myTask02Handle = osThreadNew(WaveD_Task, NULL, &myTask02_attributes);
 
   /* creation of myTask03 */
-  myTask03Handle = osThreadNew(Task_Character_Display, NULL, &myTask03_attributes);
+  //myTask03Handle = osThreadNew(Task_Character_Display, NULL, &myTask03_attributes);
 
   /* creation of myTask04 */
-  myTask04Handle = osThreadNew(Encoder_Task, NULL, &myTask04_attributes);
+  //myTask04Handle = osThreadNew(Encoder_Task, NULL, &myTask04_attributes);
 
   /* creation of myTask05 */
-  myTask05Handle = osThreadNew(Trigger_Update_Task, NULL, &myTask05_attributes);
+  //myTask05Handle = osThreadNew(Trigger_Update_Task, NULL, &myTask05_attributes);
 
   /* creation of myTask06 */
-  myTask06Handle = osThreadNew(Time_Base_Task, NULL, &myTask06_attributes);
+  //myTask06Handle = osThreadNew(Time_Base_Task, NULL, &myTask06_attributes);
 
   /* creation of myTask07 */
-  myTask07Handle = osThreadNew(Trigger_Encoder_Task, NULL, &myTask07_attributes);
+  //myTask07Handle = osThreadNew(Trigger_Encoder_Task, NULL, &myTask07_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -211,22 +213,10 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN defaultTask */
 
   /* Infinite loop */
-	osDelay(200);
-	WaveD_Clear();
 
-	for (uint8_t x=0; x<WaveD_W; x++)
-	{
-		uint8_t y = (uint8_t)((x * (WaveD_H-1u)) / (WaveD_W - 1u));
-		WaveD_Set_Pixel(x, y, true);
-	}
-
-	WaveD_Flush();
+	Scope_Task_Body();
 
   /* Infinite loop */
-  for(;;)
-  {
-	  osDelay(1);
-  }
   /* USER CODE END defaultTask */
 }
 
@@ -240,12 +230,6 @@ void StartDefaultTask(void *argument)
 void WaveD_Task(void *argument)
 {
   /* USER CODE BEGIN myTask02 */
-  /* Infinite loop */
-	for(;;)
-	{
-		osDelay(1000);
-	}
-
   WaveD_Task_Body();
   /* USER CODE END myTask02 */
 }
