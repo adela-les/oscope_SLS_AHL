@@ -178,19 +178,19 @@ void MX_FREERTOS_Init(void) {
   myTask02Handle = osThreadNew(WaveD_Task, NULL, &myTask02_attributes);
 
   /* creation of myTask03 */
-  //myTask03Handle = osThreadNew(Task_Character_Display, NULL, &myTask03_attributes);
+  myTask03Handle = osThreadNew(Task_Character_Display, NULL, &myTask03_attributes);
 
   /* creation of myTask04 */
-  //myTask04Handle = osThreadNew(Encoder_Task, NULL, &myTask04_attributes);
+  myTask04Handle = osThreadNew(Encoder_Task, NULL, &myTask04_attributes);
 
   /* creation of myTask05 */
-  //myTask05Handle = osThreadNew(Trigger_Update_Task, NULL, &myTask05_attributes);
+  myTask05Handle = osThreadNew(Trigger_Update_Task, NULL, &myTask05_attributes);
 
   /* creation of myTask06 */
-  //myTask06Handle = osThreadNew(Time_Base_Task, NULL, &myTask06_attributes);
+  myTask06Handle = osThreadNew(Time_Base_Task, NULL, &myTask06_attributes);
 
   /* creation of myTask07 */
-  //myTask07Handle = osThreadNew(Trigger_Encoder_Task, NULL, &myTask07_attributes);
+  myTask07Handle = osThreadNew(Trigger_Encoder_Task, NULL, &myTask07_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
