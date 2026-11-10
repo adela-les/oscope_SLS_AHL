@@ -73,7 +73,7 @@ const osThreadAttr_t myTask02_attributes = {
   .stack_size = sizeof(MyBufferTask02),
   .cb_mem = &MycontrolBlocTask02,
   .cb_size = sizeof(MycontrolBlocTask02),
-  .priority = (osPriority_t) osPriorityBelowNormal3,
+  .priority = (osPriority_t) osPriorityAboveNormal7,
 };
 /* Definitions for myTask03 */
 osThreadId_t myTask03Handle;
@@ -85,7 +85,7 @@ const osThreadAttr_t myTask03_attributes = {
   .stack_size = sizeof(MyBufferTask03),
   .cb_mem = &MycontrolBlocTask03,
   .cb_size = sizeof(MycontrolBlocTask03),
-  .priority = (osPriority_t) osPriorityHigh7,
+  .priority = (osPriority_t) osPriorityLow7,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
@@ -97,7 +97,7 @@ const osThreadAttr_t myTask04_attributes = {
   .stack_size = sizeof(MyBufferTask04),
   .cb_mem = &MycontrolBlocTask04,
   .cb_size = sizeof(MycontrolBlocTask04),
-  .priority = (osPriority_t) osPriorityHigh5,
+  .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 /* Definitions for myTask05 */
 osThreadId_t myTask05Handle;
@@ -109,7 +109,7 @@ const osThreadAttr_t myTask05_attributes = {
   .stack_size = sizeof(MyBufferTask05),
   .cb_mem = &MycontrolBlocTask05,
   .cb_size = sizeof(MycontrolBlocTask05),
-  .priority = (osPriority_t) osPriorityHigh3,
+  .priority = (osPriority_t) osPriorityBelowNormal3,
 };
 /* Definitions for myTask06 */
 osThreadId_t myTask06Handle;
@@ -121,7 +121,7 @@ const osThreadAttr_t myTask06_attributes = {
   .stack_size = sizeof(MyBufferTask06),
   .cb_mem = &MycontrolBlocTask06,
   .cb_size = sizeof(MycontrolBlocTask06),
-  .priority = (osPriority_t) osPriorityHigh5,
+  .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 /* Definitions for myTask07 */
 osThreadId_t myTask07Handle;
@@ -133,7 +133,7 @@ const osThreadAttr_t myTask07_attributes = {
   .stack_size = sizeof(MyBufferTask07),
   .cb_mem = &MycontrolBlocTask07,
   .cb_size = sizeof(MycontrolBlocTask07),
-  .priority = (osPriority_t) osPriorityHigh5,
+  .priority = (osPriority_t) osPriorityBelowNormal5,
 };
 
 /* Private function prototypes -----------------------------------------------*/
