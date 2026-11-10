@@ -9,14 +9,14 @@
 #include "main.h"
 #include "app_freertos.h"
 
-int8_t current = count;
+volatile uint16_t current = count;
 
 int8_t Read_Input()
 {
     static enum btn qB = HIGH;
 
-    uint32_t A = (GPIOA->IDR & LL_GPIO_PIN_6) ? 1 : 0;
-    uint32_t B = (GPIOA->IDR & LL_GPIO_PIN_7) ? 1 : 0;
+    uint32_t A = (GPIOB->IDR & LL_GPIO_PIN_2) ? 1 : 0;
+    uint32_t B = (GPIOB->IDR & LL_GPIO_PIN_3) ? 1 : 0;
 
     int8_t input = 0;
 
@@ -79,7 +79,7 @@ int8_t Read_Input()
     return input;
 }
 
-int8_t Raise_Lower_Voltage(void)
+uint16_t Raise_Lower_Voltage(void)
 {
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {
@@ -88,7 +88,7 @@ int8_t Raise_Lower_Voltage(void)
 
 	  int8_t input = Read_Input();
 
-	  if((input == 1) && (current<3))
+	  if((input == 1) && (current<30))
 	  {
 		  current++;
 	  }

@@ -39,6 +39,7 @@ extern "C" {
 #include "stm32u0xx_ll_utils.h"
 #include "stm32u0xx_ll_dma.h"
 #include "stm32u0xx_ll_spi.h"
+#include "stm32u0xx_ll_tim.h"
 #include "stm32u0xx_ll_gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
