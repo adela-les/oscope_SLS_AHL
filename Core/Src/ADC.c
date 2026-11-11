@@ -221,6 +221,7 @@ void Scope_Task_Body(void)
 		Capture_Start();
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /*sleep until ISR says buffer is full*/
 		Draw_Trace();
+		osDelay(50);
 	}
 }
 
