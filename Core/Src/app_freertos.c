@@ -28,6 +28,7 @@
 #include "Trigger_Button.h"
 #include "TimeBase.h"
 #include "Trigger_Encoder.h"
+#include "ADC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -156,6 +157,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
 	WaveD_Init();
+	Scope_ADC_Init();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -209,24 +211,11 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
+	Character_Display_Init();
+	Character_Display_ShowZero();
 
-  /* Infinite loop */
-	osDelay(200);
-	WaveD_Clear();
+	Scope_Task_Body();
 
-	for (uint8_t x=0; x<WaveD_W; x++)
-	{
-		uint8_t y = (uint8_t)((x * (WaveD_H-1u)) / (WaveD_W - 1u));
-		WaveD_Set_Pixel(x, y, true);
-	}
-
-	WaveD_Flush();
-
-  /* Infinite loop */
-  for(;;)
-  {
-	  osDelay(1);
-  }
   /* USER CODE END defaultTask */
 }
 
@@ -240,12 +229,6 @@ void StartDefaultTask(void *argument)
 void WaveD_Task(void *argument)
 {
   /* USER CODE BEGIN myTask02 */
-  /* Infinite loop */
-	for(;;)
-	{
-		osDelay(1000);
-	}
-
   WaveD_Task_Body();
   /* USER CODE END myTask02 */
 }

@@ -29,8 +29,8 @@
 #define WD_CD_PIN LL_GPIO_PIN_4
 #define WD_RST_PORT GPIOA
 #define WD_RST_PIN LL_GPIO_PIN_5
-#define WD_CS_PORT GPIOC
-#define WD_CS_PIN LL_GPIO_PIN_0
+#define WD_CS_PORT GPIOA
+#define WD_CS_PIN LL_GPIO_PIN_8
 
 /*Pin Access (LL, direct BSRR Writing*/
 static inline void WD_CD(int v){ v ? LL_GPIO_SetOutputPin(WD_CD_PORT, WD_CD_PIN): LL_GPIO_ResetOutputPin(WD_CD_PORT, WD_CD_PIN); }
@@ -42,14 +42,20 @@ static uint8_t fb[WaveD_PAGES][WaveD_W]; /*8 pages x 102 columns*/
 static SemaphoreHandle_t fb_mutex;
 static TaskHandle_t Wave_Task_Handle;
 
-/*set as Write only, faster clock, and turn peripheral on.*/
+/*Reconfigure SPI1 for the display: write only, 8-bit, mode 3 (idle high, 2nd edge), 2 MHz*/
 static void WD_SPI_Start(void)
 {
-	LL_SPI_Disable(SPI1);
-	LL_SPI_SetTransferDirection(SPI1, LL_SPI_HALF_DUPLEX_TX); /*Write Only*/
+	LL_SPI_Disable(SPI1);                                        /* settings can only change while off */
+	LL_SPI_SetTransferDirection(SPI1, LL_SPI_HALF_DUPLEX_TX);    /* write only */
+	LL_SPI_SetDataWidth(SPI1, LL_SPI_DATAWIDTH_8BIT);            /* CubeMX has 4-bit right now */
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);         /* clock idles high */
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);              /* data taken on the 2nd edge */
 	LL_SPI_SetBaudRatePrescaler(SPI1, LL_SPI_BAUDRATEPRESCALER_DIV8);
+	LL_SPI_SetTransferBitOrder(SPI1, LL_SPI_MSB_FIRST);
+	LL_SPI_DisableNSSPulseMgt(SPI1);                             /* CubeMX has this enabled */
 	LL_SPI_Enable(SPI1);
 }
+
 
 /*Low-level SPI(mode 3, MSB First, Write-only)*/
 static void Spi_Byte(uint8_t b)
@@ -118,8 +124,23 @@ static void Display_Send_Frame(void)
 
 
 /*Public API*/
+//void WaveD_Init(void)
+//{
+//	WD_SPI_Start();
+//	memset(fb, 0, sizeof fb);
+//	fb_mutex = xSemaphoreCreateMutex();
+//}
+
 void WaveD_Init(void)
 {
+	/*CS is PA8: make sure it is a driven output, idle high*/
+	LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
+	LL_GPIO_SetOutputPin(WD_CS_PORT, WD_CS_PIN);
+	LL_GPIO_SetPinMode(WD_CS_PORT, WD_CS_PIN, LL_GPIO_MODE_OUTPUT);
+	LL_GPIO_SetPinOutputType(WD_CS_PORT, WD_CS_PIN, LL_GPIO_OUTPUT_PUSHPULL);
+	LL_GPIO_SetPinSpeed(WD_CS_PORT, WD_CS_PIN, LL_GPIO_SPEED_FREQ_HIGH);
+	LL_GPIO_SetPinPull(WD_CS_PORT, WD_CS_PIN, LL_GPIO_PULL_NO);
+
 	WD_SPI_Start();
 	memset(fb, 0, sizeof fb);
 	fb_mutex = xSemaphoreCreateMutex();

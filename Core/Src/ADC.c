@@ -21,6 +21,7 @@
 static volatile uint16_t buf[WaveD_W]; /*One Sample per display column*/
 static volatile uint16_t idx;
 static TaskHandle_t Scope_Task;
+volatile uint8_t Scope_ADC_Ready = 0;
 
 /*ADC*/
 static uint16_t ADC_Convert(void)
@@ -39,19 +40,79 @@ static uint16_t ADC_Convert(void)
 	return (uint16_t)(LL_ADC_REG_ReadConversionData32(ADC1) & Scope_ADC_Max);
 }
 
-void Scope_ADC_Init(void)
-{
+//void Scope_ADC_Init(void)
+//{
 	/*Longer sampling time so higher impedance source reads correctly (12.5 cycles)*/
-	LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_COMMON_1, LL_ADC_SAMPLINGTIME_12CYCLES_5);
+//	LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_COMMON_1, LL_ADC_SAMPLINGTIME_12CYCLES_5);
 
 	/*Calibrate, then Enable)*/
-	LL_ADC_StartCalibration(ADC1);
-	while (LL_ADC_IsCalibrationOnGoing(ADC1)) {}
+//	LL_ADC_StartCalibration(ADC1);
+//	while (LL_ADC_IsCalibrationOnGoing(ADC1)) {}
 
+//	LL_ADC_ClearFlag_ADRDY(ADC1);
+//	LL_ADC_Enable(ADC1);
+//	while (!LL_ADC_IsActiveFlag_ADRDY(ADC1)) {}
+
+//	Scope_ADC_SetRate(SCOPE_DEFAULT_RATE);
+//}
+
+void Scope_ADC_Init(void)
+{
+	LL_ADC_InitTypeDef     ADC_InitStruct     = {0};
+	LL_ADC_REG_InitTypeDef ADC_REG_InitStruct = {0};
+	LL_GPIO_InitTypeDef    GPIO_InitStruct    = {0};
+	uint32_t t;
+
+	Scope_ADC_Ready = 0;
+	/*Clocks and the analog input pin (PA0 = ADC1_IN4)*/
+	LL_RCC_SetADCClockSource(LL_RCC_ADC_CLKSOURCE_SYSCLK);
+	LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
+	LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
+
+	GPIO_InitStruct.Pin  = LL_GPIO_PIN_0;
+	GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+	LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	/*ADC settings (same as CubeMX: 10-bit, right aligned, software trigger, single conversion)*/
+	ADC_InitStruct.Clock         = LL_ADC_CLOCK_SYNC_PCLK_DIV1;
+	ADC_InitStruct.Resolution    = LL_ADC_RESOLUTION_10B;
+	ADC_InitStruct.DataAlignment = LL_ADC_DATA_ALIGN_RIGHT;
+	ADC_InitStruct.LowPowerMode  = LL_ADC_LP_MODE_NONE;
+	LL_ADC_Init(ADC1, &ADC_InitStruct);
+
+	LL_ADC_REG_SetSequencerConfigurable(ADC1, LL_ADC_REG_SEQ_FIXED);
+
+	ADC_REG_InitStruct.TriggerSource    = LL_ADC_REG_TRIG_SOFTWARE;
+	ADC_REG_InitStruct.SequencerLength  = LL_ADC_REG_SEQ_SCAN_DISABLE;
+	ADC_REG_InitStruct.SequencerDiscont = LL_ADC_REG_SEQ_DISCONT_1RANK;
+	ADC_REG_InitStruct.ContinuousMode   = LL_ADC_REG_CONV_SINGLE;
+	ADC_REG_InitStruct.DMATransfer      = LL_ADC_REG_DMA_TRANSFER_NONE;
+	ADC_REG_InitStruct.Overrun          = LL_ADC_REG_OVR_DATA_PRESERVED;
+	LL_ADC_REG_Init(ADC1, &ADC_REG_InitStruct);
+
+	LL_ADC_REG_SetSequencerScanDirection(ADC1, LL_ADC_REG_SEQ_SCAN_DIR_FORWARD);
+	LL_ADC_SetOverSamplingScope(ADC1, LL_ADC_OVS_DISABLE);
+	LL_ADC_SetTriggerFrequencyMode(ADC1, LL_ADC_TRIGGER_FREQ_HIGH);
+	LL_ADC_REG_SetSequencerChAdd(ADC1, LL_ADC_CHANNEL_4);
+	/*Longer sampling time so a pot / higher impedance source reads correctly (12.5 cycles)*/
+	LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_COMMON_1, LL_ADC_SAMPLINGTIME_12CYCLES_5);
+	LL_ADC_DisableIT_EOC(ADC1);
+	LL_ADC_DisableIT_EOS(ADC1);
+	/*Voltage regulator on, then give it time to settle (about 1 ms here, plenty)*/
+	LL_ADC_EnableInternalRegulator(ADC1);
+	for (volatile uint32_t i = 0; i < 20000u; i++) {}
+	/*Calibrate (limited wait)*/
+	LL_ADC_StartCalibration(ADC1);
+	t = 1000000u;
+	while (LL_ADC_IsCalibrationOnGoing(ADC1) && (--t != 0u)) {}
+	if (t == 0u) return;                          /* calibration never finished: Scope_ADC_Ready stays 0 */
+	/*Enable (limited wait)*/
 	LL_ADC_ClearFlag_ADRDY(ADC1);
 	LL_ADC_Enable(ADC1);
-	while (!LL_ADC_IsActiveFlag_ADRDY(ADC1)) {}
-
+	t = 1000000u;
+	while (!LL_ADC_IsActiveFlag_ADRDY(ADC1) && (--t != 0u)) {}
+	if (t == 0u) return;                          /* ADC never became ready: Scope_ADC_Ready stays 0 */
+	Scope_ADC_Ready = 1;
 	Scope_ADC_SetRate(SCOPE_DEFAULT_RATE);
 }
 
@@ -138,7 +199,7 @@ static void Draw_Trace(void)
 	{
 		uint8_t Y = Sample_To_Y(buf[x]);
 		uint8_t Lo = (Y < Y_Prev) ? Y : Y_Prev; /*Joins this point to the last*/
-		uint8_t Hi = (Y < Y_Prev) ? Y : Y_Prev;
+		uint8_t Hi = (Y < Y_Prev) ? Y_Prev : Y;
 
 		for (uint8_t yy = Lo; yy <= Hi; yy++)
 		{
