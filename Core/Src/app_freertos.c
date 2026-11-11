@@ -73,7 +73,7 @@ const osThreadAttr_t myTask02_attributes = {
   .stack_size = sizeof(MyBufferTask02),
   .cb_mem = &MycontrolBlocTask02,
   .cb_size = sizeof(MycontrolBlocTask02),
-  .priority = (osPriority_t) osPriorityAboveNormal7,
+  .priority = (osPriority_t) osPriorityBelowNormal1,
 };
 /* Definitions for myTask03 */
 osThreadId_t myTask03Handle;
@@ -85,7 +85,7 @@ const osThreadAttr_t myTask03_attributes = {
   .stack_size = sizeof(MyBufferTask03),
   .cb_mem = &MycontrolBlocTask03,
   .cb_size = sizeof(MycontrolBlocTask03),
-  .priority = (osPriority_t) osPriorityLow7,
+  .priority = (osPriority_t) osPriorityBelowNormal1,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
