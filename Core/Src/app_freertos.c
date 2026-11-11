@@ -215,7 +215,6 @@ void StartDefaultTask(void *argument)
 	Character_Display_ShowZero();
 
 	Scope_Task_Body();
-
   /* USER CODE END defaultTask */
 }
 
