@@ -55,6 +55,12 @@ extern "C" {
 
 /* USER CODE END EM */
 extern osThreadId_t defaultTaskHandle;
+extern osThreadId_t myTask02Handle;
+extern osThreadId_t myTask03Handle;
+extern osThreadId_t myTask04Handle;
+extern osThreadId_t myTask05Handle;
+extern osThreadId_t myTask06Handle;
+extern osThreadId_t myTask07Handle;
 
 /* Exported function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -62,6 +68,12 @@ extern osThreadId_t defaultTaskHandle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
+void WaveD_Task(void *argument);
+void Task_Character_Display(void *argument);
+void Encoder_Task(void *argument);
+void Trigger_Update_Task(void *argument);
+void Time_Base_Task(void *argument);
+void Trigger_Encoder_Task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 

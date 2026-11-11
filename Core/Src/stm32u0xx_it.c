@@ -22,6 +22,7 @@
 #include "stm32u0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "ADC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,6 +101,19 @@ void HardFault_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32u0xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles TIM7 and LPTIM2 global Interrupt (combined with EXTI 32).
+  */
+void TIM7_LPTIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_LPTIM2_IRQn 0 */
+	Scope_ADC_Timer_ISR();
+  /* USER CODE END TIM7_LPTIM2_IRQn 0 */
+  /* USER CODE BEGIN TIM7_LPTIM2_IRQn 1 */
+
+  /* USER CODE END TIM7_LPTIM2_IRQn 1 */
+}
 
 /**
   * @brief This function handles TIM16 global interrupt.

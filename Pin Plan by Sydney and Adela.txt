@@ -7,19 +7,21 @@ Qty	Label	BRD Pin	DSP Pin	Wire Color
 1 	CLK 	PA1 	25	Orange
 1 	CD 	PA4 	26	Blue
 1 	RST 	PA5 	27	Yellow
-1 	CS0 	PC0 	28	Green
+1 	CS0 	PA8 	28	Green
 
 Character Display:
-11 GPIO Output Pin; PB0-10
+11 GPIO Output Pin; PB0-7, PB10, PC8, PC9
 3 Ground Pins; GND
 1 Power Pin (5V); 5V
 
 Inputs:
-6 Input Pins for Encoders; E1:PC2 & PC3  E2:PC10 & PC11  E3:PC13 & PC14
-1 Input Pin for Button; PC15
+6 Input Pins for Encoders; E1:PC2 & PC3  E2:PC10 & PC11  E3:PC14 & PC15
+1 Input Pin for Button; PC13
 
 Single Channel Scope:
 1 ADC Pin; PA0
 
 Debug:
 Multiple GPIO Pins; TBD
+
+PC0 and PC1 and PA13 and PA 14 are NOT available to us
