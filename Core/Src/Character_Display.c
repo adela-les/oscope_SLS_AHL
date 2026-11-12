@@ -10,7 +10,6 @@
 #include "Character_Display.h"
 
 
-<<<<<<< Updated upstream
 static void LCD_Delay_E(void)
 {
 	for (volatile uint16_t n = 0; n < 10; n++) { ; }
@@ -23,9 +22,6 @@ static void LCD_Delay_Cmd(void)
 }
 
 void Character_Display_Command(uint8_t i)
-=======
-/*void Character_Display_Command(uint8_t i)
->>>>>>> Stashed changes
 {
 
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_DATA_MASK | LCD_RS_PIN);
@@ -203,79 +199,6 @@ void Update_Character_Display_Volt_Start(uint16_t new_start)
 	Character_Display_SetCursor(0, 13);
 	Character_Display_Write(ones_place + '0');
 
-}
-*/
-
-/*
- * Character_Display.c
- *
- *  Created on: Oct 20, 2026
- *      Author: Jagad
- */
-
-
-// Define pin mappings for clarity (Adjust if your pins differ)
-#define LCD_DATA_MASK  0x00FF  // Pins 0-7 for DB0-DB7
-#define LCD_E_PIN      (1 << 8)   // Pin 8 for Enable (E)
-#define LCD_RW_PIN     (1 << 9)   // Pin 9 for Read/Write (R/W)
-#define LCD_RS_PIN     (1 << 10)  // Pin 10 for Register Select (D/I)
-
-void Character_Display_Command(uint8_t i)
-{
-    // 1. Clear data bus and control lines (E, R/W, RS)
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_DATA_MASK | LCD_E_PIN | LCD_RW_PIN | LCD_RS_PIN);
-
-    // 2. Put data byte directly onto output Port (Pins 0-7)
-    LL_GPIO_SetOutputPin(GPIOB, i);
-
-    // 3. Set control lines: RS = LOW (Instruction), R/W = LOW (Write)
-    // (They are already low from the reset step, but explicit is fine)
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_RS_PIN);
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_RW_PIN);
-
-    // 4. Latch data with Enable pulse (HIGH -> LOW falling edge)
-    LL_GPIO_SetOutputPin(GPIOB, LCD_E_PIN);   // Set Clock Pin High
-    osDelay(1);                               // enable pulse width >= 300ns
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_E_PIN);  // Set Clock Pin Low
-}
-
-void Character_Display_Write(uint8_t i)
-{
-    // 1. Clear data bus and control lines
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_DATA_MASK | LCD_E_PIN | LCD_RW_PIN | LCD_RS_PIN);
-
-    // 2. Put data byte directly onto output Port (Pins 0-7)
-    LL_GPIO_SetOutputPin(GPIOB, i);
-
-    // 3. Set control lines: RS = HIGH (Data), R/W = LOW (Write)
-    LL_GPIO_SetOutputPin(GPIOB, LCD_RS_PIN);   // D/I = HIGH : send data
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_RW_PIN); // R/W = LOW : Write
-
-    // 4. Latch data with Enable pulse (HIGH -> LOW falling edge)
-    LL_GPIO_SetOutputPin(GPIOB, LCD_E_PIN);   // Set Clock Pin High
-    osDelay(1);                               // enable pulse width >= 300ns
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_E_PIN);  // Set Clock Pin Low
-}
-
-void Character_Display_Init(void)
-{
-    LL_GPIO_ResetOutputPin(GPIOB, LCD_E_PIN); // Set Clock Pin Low
-    osDelay(100);                             // Wait >40 msec after power is applied
-
-    Character_Display_Command(0x30);          // command 0x30 = Wake up
-    osDelay(30);                              // must wait 5ms, busy flag not available
-
-    Character_Display_Command(0x30);          // command 0x30 = Wake up #2
-    osDelay(10);                              // must wait 160us, busy flag not available
-
-    Character_Display_Command(0x30);          // command 0x30 = Wake up #3
-    osDelay(10);                              // must wait 160us, busy flag not available
-
-    Character_Display_Command(0x38);          // Function set: 8-bit/2-line
-    Character_Display_Command(0x08);          // Display OFF
-    Character_Display_Command(0x01);          // Clear Display
-    Character_Display_Command(0x06);          // Entry mode set
-    Character_Display_Command(0x0C);          // Display ON; Cursor ON
 }
 
 
