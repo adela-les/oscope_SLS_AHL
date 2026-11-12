@@ -39,6 +39,8 @@ typedef StaticTask_t osStaticThreadDef_t;
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+volatile uint8_t lcd_stage = 0;
+
 
 /* USER CODE END PD */
 
@@ -85,7 +87,7 @@ const osThreadAttr_t myTask03_attributes = {
   .stack_size = sizeof(MyBufferTask03),
   .cb_mem = &MycontrolBlocTask03,
   .cb_size = sizeof(MycontrolBlocTask03),
-  .priority = (osPriority_t) osPriorityBelowNormal1,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
@@ -211,8 +213,7 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
-	Character_Display_Init();
-	Character_Display_ShowZero();
+
 
 	Scope_Task_Body();
   /* USER CODE END defaultTask */
@@ -247,17 +248,21 @@ void Task_Character_Display(void *argument)
 	extern uint16_t time;
 	extern uint8_t mode;
 	extern uint16_t start_point;
-	uint8_t new_mode = 0;
-	uint8_t new_current = 0;
-	uint8_t new_time = 0;
-	uint8_t new_start = 0;
+	uint8_t  new_mode    = 0xFF;
+	uint16_t new_current = 0xFFFF;
+	uint16_t new_time    = 0xFFFF;
+	uint16_t new_start   = 0xFFFF;
+	lcd_stage = 1;
 	Character_Display_Init();
+	lcd_stage = 2;
 	Character_Display_ShowZero();
+	lcd_stage = 3;
 
   /* Infinite loop */
   for(;;)
   {
 	  osDelay(50);
+	  lcd_stage = 4;
 	  // TODO, MAKE GO FASTER Update_Character_Display_Time(time);
 
 	  if(new_mode!=mode)

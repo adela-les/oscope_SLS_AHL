@@ -10,13 +10,16 @@
 #include "Character_Display.h"
 
 
-void DelayLoop(void)
-	{
-		for(volatile uint16_t n = 0; n < 1000; n++)
-		{
-			;
-		}
-	}
+static void LCD_Delay_E(void)
+{
+	for (volatile uint16_t n = 0; n < 10; n++) { ; }
+}
+
+// Time for the LCD to execute an instruction (needs ~40 us)
+static void LCD_Delay_Cmd(void)
+{
+	for (volatile uint16_t n = 0; n < 400; n++) { ; }
+}
 
 void Character_Display_Command(uint8_t i)
 {
@@ -26,11 +29,11 @@ void Character_Display_Command(uint8_t i)
 	LL_GPIO_SetOutputPin(GPIOC, ((uint32_t)i << LCD_DATA_SHIFT) & LCD_DATA_MASK);
 
 
-	DelayLoop();                               // setup time before E rises
+	LCD_Delay_E();                               // setup time before E rises
 	LL_GPIO_SetOutputPin(GPIOC, LCD_E_PIN);    // E high
-	DelayLoop();                               // pulse width
+	LCD_Delay_E();                              // pulse width
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);  // E low: data latched
-	DelayLoop();                               // let the command execute
+	LCD_Delay_Cmd();                               // let the command execute
 }
 
 void Character_Display_Write(uint8_t i)
@@ -39,11 +42,11 @@ void Character_Display_Write(uint8_t i)
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN | LCD_RW_PIN);
 	LL_GPIO_SetOutputPin(GPIOC, (((uint32_t)i << LCD_DATA_SHIFT) & LCD_DATA_MASK) | LCD_RS_PIN);
 
-	DelayLoop();
+	LCD_Delay_E();
 	LL_GPIO_SetOutputPin(GPIOC, LCD_E_PIN);
-	DelayLoop();
+	LCD_Delay_E();
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);
-	DelayLoop();
+	LCD_Delay_Cmd();
 }
 
 void Character_Display_SetCursor(uint8_t row, uint8_t col)
@@ -62,31 +65,36 @@ void Character_Display_Init(void)
 {
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);
 
-	for(volatile uint32_t n = 0; n < 1000000; n++)   // >40 ms after power-up
+	/*for(volatile uint32_t n = 0; n < 1000000; n++)   // >40 ms after power-up
 	{
 		;
 	}
+	*/
+	osDelay(50);
 
 	Character_Display_Command(0x30);    // wake up #1
-	for(volatile uint32_t n = 0; n < 100000; n++)    // >4.1 ms
+	/*for(volatile uint32_t n = 0; n < 100000; n++)    // >4.1 ms
 	{
 		;
-	}
+	}*/
+	osDelay(6);
 	Character_Display_Command(0x30);    // wake up #2
-	for(volatile uint32_t n = 0; n < 100000; n++)
+	/*for(volatile uint32_t n = 0; n < 100000; n++)
 	{
 		;
-	}
+	}*/
+	osDelay(2);
 	Character_Display_Command(0x30);    // wake up #3
-	DelayLoop();
 
 	Character_Display_Command(0x38);    // 8-bit, 2 lines, 5x8
 	Character_Display_Command(0x08);    // display off
 	Character_Display_Command(0x01);    // clear display
-	for(volatile uint32_t n = 0; n < 50000; n++)
+	/*for(volatile uint32_t n = 0; n < 50000; n++)
 	{
 		;
-	}
+	}*/
+	osDelay(3);
+
 	Character_Display_Command(0x0C);    // display on, cursor off
 	Character_Display_Command(0x06);    // entry mode: increment
 
@@ -97,37 +105,26 @@ void Character_Display_ShowZero(void)
 
 	Character_Display_SetCursor(0, 3);
 	Character_Display_Write('V');
-	Character_Display_SetCursor(0, 4);
 	Character_Display_Write(' ');
-	Character_Display_SetCursor(0, 5);
 	Character_Display_Write('T');
-	Character_Display_SetCursor(0, 6);
 	Character_Display_Write('a');
-	Character_Display_SetCursor(0, 7);
 	Character_Display_Write('l');
-	Character_Display_SetCursor(0, 8);
 	Character_Display_Write('l');
-	Character_Display_SetCursor(0, 9);
 
 	Character_Display_SetCursor(1, 3);
 	Character_Display_Write('.');
 	Character_Display_SetCursor(1, 6);
 	Character_Display_Write('m');
-	Character_Display_SetCursor(1, 7);
 	Character_Display_Write('s');
 
 	Character_Display_SetCursor(1, 12);
 	Character_Display_Write('F');
-	Character_Display_SetCursor(1, 13);
 	Character_Display_Write('a');
-	Character_Display_SetCursor(1, 14);
 	Character_Display_Write('l');
-	Character_Display_SetCursor(1, 15);
 	Character_Display_Write('l');
 
 	Character_Display_SetCursor(0, 14);
 	Character_Display_Write('V');
-	Character_Display_SetCursor(0, 15);
 	Character_Display_Write('t');
 
 }
