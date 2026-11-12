@@ -12,6 +12,14 @@
 uint16_t setting = count;
 volatile uint8_t mode = 0;
 
+static void Debounce_Delay(void)
+{
+	for (volatile uint32_t i = 0; i < DEBOUNCE_LOOPS; i++)   // volatile: not optimized away
+	{
+		;
+	}
+}
+
 int8_t Button_Read()
 {
 	static enum btn qIncrement = HIGH;
@@ -27,7 +35,7 @@ int8_t Button_Read()
 			}
 		else break;
 	case H_BOUNCE_DELAY:
-
+		Debounce_Delay();
 		if(incrementG==0){
 			qIncrement = FALL;
 			break;
@@ -47,7 +55,7 @@ int8_t Button_Read()
 		}
 		else break;
 	case L_BOUNCE_DELAY:
-
+		Debounce_Delay();
 		if(incrementG==1){
 			qIncrement = RISE;
 			break;
@@ -68,10 +76,6 @@ int8_t Button_Read()
 
 int8_t Rise_Or_Fall(void)
 {
-	 for(uint16_t i = 0; i < 1234; i++)
-		      {
-		          ;
-		      }
 
 	  int8_t input = Button_Read();
 
