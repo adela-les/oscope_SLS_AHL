@@ -216,6 +216,12 @@ void StartDefaultTask(void *argument)
 
 
 	Scope_Task_Body();
+
+	/* Infinite loop */
+	 for(;;)
+	  {
+	    osDelay(1);
+	  }
   /* USER CODE END defaultTask */
 }
 
