@@ -215,16 +215,12 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
 
-<<<<<<< Updated upstream
-
 	Scope_Task_Body();
-=======
   /* Infinite loop */
  for(;;)
   {
     osDelay(1);
   }
->>>>>>> Stashed changes
   /* USER CODE END defaultTask */
 }
 
