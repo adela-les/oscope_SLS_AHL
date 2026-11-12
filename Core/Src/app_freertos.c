@@ -19,7 +19,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "app_freertos.h"
-#include "Character_Display.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -215,16 +214,8 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
 
-<<<<<<< Updated upstream
 
 	Scope_Task_Body();
-=======
-  /* Infinite loop */
- for(;;)
-  {
-    osDelay(1);
-  }
->>>>>>> Stashed changes
   /* USER CODE END defaultTask */
 }
 
