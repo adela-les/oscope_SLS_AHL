@@ -3,6 +3,12 @@
  *
  *  Created on: Oct 29, 2026
  *      Author: sydney
+ *
+ *  Scope controls (set by the encoder/button tasks):
+ *    mode        0 = trigger on falling edge, 1 = trigger on rising edge
+ *    start_point trigger level, 0..30 = 0.0 V .. 3.0 V (tenths of a volt)
+ *    current     screen height in volts, 1..30 = 0.1 V .. 3.0 V tall (tenths of a volt)
+ *    time        time across the screen, in units of 0.1 ms (310 = 31.0 ms)
  */
 
 #include "main.h"
@@ -13,12 +19,23 @@
 #include "stm32u0xx_ll_tim.h"
 #include "task.h"
 
+/*Controls defined in the encoder / button files*/
+extern volatile uint16_t current;
+extern volatile uint16_t time;
+extern volatile uint8_t  mode;
+extern volatile uint16_t start_point;
+
 #define Scope_Tim TIM7
 #define SCOPE_TIM_CLK_HZ 16000000u /*APB 1 prescaler = 1 so timer clock = 16MHz*/
-#define SCOPE_DEFAULT_RATE 10000u /*10 kS/s -> one 102-sample screen = ~10ms */
+#define SCOPE_DEFAULT_RATE 10000u /*10 kS/s until the first capture sets the real rate*/
 #define Scope_Max_Rate 100000u /*keep ISR load reasonable*/
 
-static volatile uint16_t buf[WaveD_W]; /*One Sample per display column*/
+#define SCOPE_VREF_TENTHS 33u /*3.3 V reference, in tenths of a volt*/
+#define SCOPE_DIVS 1u /*1 = "time" is the whole screen width. Set to 10 if "time" means per division of 10*/
+
+#define SCOPE_CAP_LEN (2u * WaveD_W) /*capture two screens so a trigger can be found in the first one*/
+
+static volatile uint16_t buf[SCOPE_CAP_LEN];
 static volatile uint16_t idx;
 static TaskHandle_t Scope_Task;
 volatile uint8_t Scope_ADC_Ready = 0;
@@ -39,22 +56,6 @@ static uint16_t ADC_Convert(void)
 
 	return (uint16_t)(LL_ADC_REG_ReadConversionData32(ADC1) & Scope_ADC_Max);
 }
-
-//void Scope_ADC_Init(void)
-//{
-	/*Longer sampling time so higher impedance source reads correctly (12.5 cycles)*/
-//	LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_COMMON_1, LL_ADC_SAMPLINGTIME_12CYCLES_5);
-
-	/*Calibrate, then Enable)*/
-//	LL_ADC_StartCalibration(ADC1);
-//	while (LL_ADC_IsCalibrationOnGoing(ADC1)) {}
-
-//	LL_ADC_ClearFlag_ADRDY(ADC1);
-//	LL_ADC_Enable(ADC1);
-//	while (!LL_ADC_IsActiveFlag_ADRDY(ADC1)) {}
-
-//	Scope_ADC_SetRate(SCOPE_DEFAULT_RATE);
-//}
 
 void Scope_ADC_Init(void)
 {
@@ -170,12 +171,12 @@ void Scope_ADC_Timer_ISR(void)
 
 	LL_TIM_ClearFlag_UPDATE(Scope_Tim);
 
-	if (idx < WaveD_W)
+	if (idx < SCOPE_CAP_LEN)
 	{
 		buf[idx] = ADC_Convert();
 		idx++;
 
-		if (idx >= WaveD_W)
+		if (idx >= SCOPE_CAP_LEN)
 		{
 			Capture_Stop();
 			if (Scope_Task) vTaskNotifyGiveFromISR(Scope_Task, &woken);
@@ -184,20 +185,51 @@ void Scope_ADC_Timer_ISR(void)
 	}
 }
 
-/*Drawing*/
-static uint8_t Sample_To_Y(uint16_t v)
+/*Convert tenths of a volt (0..30) to ADC counts (0..1023)*/
+static uint32_t Tenths_To_Counts(uint16_t tenths)
 {
-	return (uint8_t)((WaveD_H - 1u) - (((uint32_t)v * (WaveD_H - 1u)) / Scope_ADC_Max));
+	return ((uint32_t)tenths * Scope_ADC_Max) / SCOPE_VREF_TENTHS;
 }
 
-static void Draw_Trace(void)
+/*Find the first point where the signal crosses the trigger level in the chosen direction.
+ *Returns the index to start drawing from, or 0 if no crossing was found (auto: draw from the start)*/
+static uint16_t Find_Trigger(uint16_t level, uint8_t rising)
 {
-	uint8_t Y_Prev = Sample_To_Y(buf[0]);
+	for (uint16_t i = 1u; i <= WaveD_W; i++)
+	{
+		uint16_t a = buf[i - 1u];
+		uint16_t b = buf[i];
+
+		if (rising && (a < level) && (b >= level))
+		{
+			return i;
+		}
+		if (!rising && (a > level) && (b <= level))
+		{
+			return i;
+		}
+	}
+	return 0u;
+}
+
+/*Drawing: full_counts is the ADC value that reaches the top of the screen*/
+static uint8_t Sample_To_Y(uint16_t v, uint32_t full_counts)
+{
+	if ((uint32_t)v >= full_counts)
+	{
+		return 0u;
+	}
+	return (uint8_t)((WaveD_H - 1u) - (((uint32_t)v * (WaveD_H - 1u)) / full_counts));
+}
+
+static void Draw_Trace(uint16_t first, uint32_t full_counts)
+{
+	uint8_t Y_Prev = Sample_To_Y(buf[first], full_counts);
 
 	WaveD_Clear();
 	for (uint8_t x=0; x < WaveD_W; x++)
 	{
-		uint8_t Y = Sample_To_Y(buf[x]);
+		uint8_t Y = Sample_To_Y(buf[first + x], full_counts);
 		uint8_t Lo = (Y < Y_Prev) ? Y : Y_Prev; /*Joins this point to the last*/
 		uint8_t Hi = (Y < Y_Prev) ? Y_Prev : Y;
 
@@ -218,17 +250,20 @@ void Scope_Task_Body(void)
 
 	for (;;)
 	{
+		/*Read the controls once per frame*/
+		uint16_t t      = (time < 1u) ? 1u : time;                 /*0.1 ms units, screen width*/
+		uint16_t cur    = (current < 1u) ? 1u : current;           /*tenths of a volt, screen height*/
+		uint16_t level  = (uint16_t)Tenths_To_Counts(start_point); /*trigger level in ADC counts*/
+		uint8_t  rising = (mode != 0u);                            /*1 = rise, 0 = fall*/
+		uint32_t full   = Tenths_To_Counts(cur);                   /*ADC counts for a full-height screen*/
+
+		/*WaveD_W samples across t x 0.1 ms  ->  rate = WaveD_W * 10000 / (t * SCOPE_DIVS)*/
+		Scope_ADC_SetRate(((uint32_t)WaveD_W * 10000u) / ((uint32_t)t * SCOPE_DIVS));
+
 		Capture_Start();
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /*sleep until ISR says buffer is full*/
-		Draw_Trace();
+
+		Draw_Trace(Find_Trigger(level, rising), full);
 		osDelay(50);
 	}
 }
-
-
-
-
-
-
-
-
