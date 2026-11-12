@@ -19,7 +19,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "app_freertos.h"
-#include "Character_Display.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
