@@ -214,14 +214,12 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN defaultTask */
 
-
 	Scope_Task_Body();
-
-	/* Infinite loop */
-	 for(;;)
-	  {
-	    osDelay(1);
-	  }
+  /* Infinite loop */
+ for(;;)
+  {
+    osDelay(1);
+  }
   /* USER CODE END defaultTask */
 }
 
