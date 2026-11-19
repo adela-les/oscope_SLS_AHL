@@ -11,11 +11,13 @@
 #include "Voltage_Encoder.h"
 #include "main.h"
 #include "TimeBase.h"
+#include <stdint.h>
 
 uint16_t Raise_Lower_Start(void);
 int8_t read_encoder(void);
 
 #define initial 15
+#define Big_Volt 30
 
 
 

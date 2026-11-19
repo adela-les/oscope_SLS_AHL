@@ -9,6 +9,7 @@
 #define INC_VOLTAGE_ENCODER_H_
 
 #include "main.h"
+#include <stdint.h>
 
 uint16_t Raise_Lower_Voltage(void);
 int8_t Read_Input(void);

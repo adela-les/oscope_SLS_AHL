@@ -9,10 +9,10 @@
 #include "main.h"
 #include "app_freertos.h"
 
-uint16_t setting = count;
+//uint16_t setting = count;
 volatile uint8_t mode = 0;
 
-int8_t Button_Read()
+int8_t Button_Read(void)
 {
 	static enum btn qIncrement = HIGH;
 
@@ -58,6 +58,9 @@ int8_t Button_Read()
 		}
 	case RISE:
 		qIncrement = HIGH;
+		break;
+	default:
+		return 0;
 		break;
 
 

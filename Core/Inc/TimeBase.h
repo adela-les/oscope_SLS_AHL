@@ -8,6 +8,8 @@
 #ifndef SRC_TIMEBASE_H_
 #define SRC_TIMEBASE_H_
 
+#include <stdint.h>
+
 uint16_t Raise_Lower_Time(void);
 int8_t read_time(void);
 

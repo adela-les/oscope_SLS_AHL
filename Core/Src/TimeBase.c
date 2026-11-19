@@ -13,7 +13,7 @@
 
 volatile uint16_t time = start;
 
-int8_t read_time()
+int8_t read_time(void)
 {
     static enum btn qB = HIGH;
 
@@ -76,6 +76,10 @@ int8_t read_time()
     case FALL:
         qB = LOW;
         break;
+
+    default:
+    		input = 0;
+    		break;
     }
 
     return input;

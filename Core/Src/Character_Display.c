@@ -10,6 +10,7 @@
 #include "Character_Display.h"
 
 
+
 static void LCD_Delay_E(void)
 {
 	for (volatile uint16_t n = 0; n < 10; n++) { ; }
@@ -87,16 +88,12 @@ void Character_Display_Init(void)
 	Character_Display_Command(0x30);    // wake up #3
 
 	Character_Display_Command(0x38);    // 8-bit, 2 lines, 5x8
-	Character_Display_Command(0x08);    // display off
-	Character_Display_Command(0x01);    // clear display
-	/*for(volatile uint32_t n = 0; n < 50000; n++)
-	{
-		;
-	}*/
+	Character_Display_Command(0x08);    /* display off */
+	Character_Display_Command(0x01);    /* clear display*/
 	osDelay(3);
 
-	Character_Display_Command(0x0C);    // display on, cursor off
-	Character_Display_Command(0x06);    // entry mode: increment
+	Character_Display_Command(0x0C);
+	Character_Display_Command(0x06);
 
 }
 

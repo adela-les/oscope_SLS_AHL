@@ -10,6 +10,7 @@
 
 #include "main.h"
 #include "Voltage_Encoder.h"
+#include <stdint.h>
 
 int8_t Rise_Or_Fall(void);
 int8_t Button_Read(void);

@@ -8,6 +8,7 @@
 #include "Trigger_Encoder.h"
 
 volatile uint16_t start_point = initial;
+uint16_t Max_voltage = Big_Volt;
 
 int8_t read_encoder()
 {
@@ -72,6 +73,10 @@ int8_t read_encoder()
     case FALL:
         qB = LOW;
         break;
+
+    default:
+        	input = 0;
+        	break;
     }
 
     return input;
@@ -86,7 +91,7 @@ uint16_t Raise_Lower_Start(void)
 
 	  int8_t input = read_encoder();
 
-	  if((input == 1) && (start_point<30))
+	  if((input == 1) && (start_point<Max_voltage))
 	  {
 		  start_point++;
 	  }

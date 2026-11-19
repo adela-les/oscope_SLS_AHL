@@ -74,6 +74,9 @@ int8_t Read_Input()
     case FALL:
         qB = LOW;
         break;
+    default:
+    		input = 0;
+    		break;
     }
 
     return input;
