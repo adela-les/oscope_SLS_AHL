@@ -9,18 +9,25 @@
 #define INC_ADC_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define Scope_ADC_Max 1023u /* 10-bit ADC: readings are 0 to 1023 (0v-3.3v)*/
 
-void Scope_ADC_Init(void); /*Calibrate and enable ADC, set the default sample rate*/
+/* Calibrate and enable ADC, set the default sample rate. Returns false on any failure. */
+bool Scope_ADC_Init(void);
 
-void Scope_ADC_SetRate(uint32_t hz); /*Samples per second (1 to 100000). Take effect at the next capture*/
+/* True only after Scope_ADC_Init() succeeded. */
+bool Scope_ADC_IsReady(void);
 
-uint16_t Scope_ADC_ReadOnce(void); /*One blocking conversion, 0 to 1023 (for bring-up tests)*/
+/* Samples per second (1 to 100000, values above the max are clamped).
+ * Takes effect at the next capture. Returns false if hz is 0. */
+bool Scope_ADC_SetRate(uint32_t hz);
 
-void Scope_Task_Body(void); /*Call from the scope task. Captures, draws, repeats*/
+/* One blocking conversion. Writes 0 to 1023 to *out. Returns false on timeout,
+ * a NULL pointer, or if the ADC is not ready. */
+bool Scope_ADC_ReadOnce(uint16_t *out);
 
-void Scope_ADC_Timer_ISR(void); /*Call from the sample timer's IRQ handler*/
-
+void Scope_Task_Body(void);      /* Call from the scope task. Captures, draws, repeats */
+void Scope_ADC_Timer_ISR(void);  /* Call from the sample timer's IRQ handler */
 
 #endif /* INC_ADC_H_ */
