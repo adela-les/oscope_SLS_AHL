@@ -12,8 +12,8 @@
 #include "Voltage_Encoder.h"
 #include <stdint.h>
 
-int8_t Rise_Or_Fall(void);
-int8_t Button_Read(void);
+uint8_t Rise_Or_Fall(void);
+uint8_t Button_Read(void);
 
 #define count 15
 #define DEBOUNCE_LOOPS  40000

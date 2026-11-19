@@ -15,7 +15,7 @@ void Character_Display_Init(void);
 void Character_Display_ShowZero(void);
 void Character_Display_SetCursor(uint8_t row, uint8_t col);
 void Update_Character_Display_Voltage(uint16_t new_voltage);
-void Update_Character_Display_Trigger(uint8_t trigger);
+void Update_Character_Display_Trigger(uint16_t trigger);
 void Update_Character_Display_Time(uint16_t new_time);
 void Update_Character_Display_Volt_Start(uint16_t new_start);
 

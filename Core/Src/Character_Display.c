@@ -52,6 +52,9 @@ void Character_Display_Write(uint8_t i)
 
 void Character_Display_SetCursor(uint8_t row, uint8_t col)
 {
+	if (row > 1U)  { return; } /*ASSERTING THAT VALUES ARE IN RANGE*/
+	if (col > 15U) { return; }
+
     uint8_t addr = col;
 
     if (row == 1)
@@ -66,24 +69,11 @@ void Character_Display_Init(void)
 {
 	LL_GPIO_ResetOutputPin(GPIOC, LCD_E_PIN);
 
-	/*for(volatile uint32_t n = 0; n < 1000000; n++)   // >40 ms after power-up
-	{
-		;
-	}
-	*/
 	osDelay(50);
 
 	Character_Display_Command(0x30);    // wake up #1
-	/*for(volatile uint32_t n = 0; n < 100000; n++)    // >4.1 ms
-	{
-		;
-	}*/
 	osDelay(6);
 	Character_Display_Command(0x30);    // wake up #2
-	/*for(volatile uint32_t n = 0; n < 100000; n++)
-	{
-		;
-	}*/
 	osDelay(2);
 	Character_Display_Command(0x30);    // wake up #3
 
@@ -128,8 +118,10 @@ void Character_Display_ShowZero(void)
 
 void Update_Character_Display_Voltage(uint16_t new_voltage)
 {
-	uint8_t tens_place = new_voltage / 10;
-	uint8_t ones_place = new_voltage - (tens_place * 10);
+	//if (new_voltage > 31) { return; } /*Asserting voltage is no more than 30*/
+
+	uint16_t tens_place = new_voltage / 10;
+	uint16_t ones_place = new_voltage - (tens_place * 10);
 
 	Character_Display_Command(0x80);    // cursor to row 0, col 0
 	Character_Display_Write(tens_place + '0');
@@ -139,8 +131,10 @@ void Update_Character_Display_Voltage(uint16_t new_voltage)
 	Character_Display_Write(ones_place + '0');
 }
 
-void Update_Character_Display_Trigger(uint8_t trigger)
+void Update_Character_Display_Trigger(uint16_t trigger)
 {
+	//if (trigger > 1U) { return; } /*Trigger should only ever be 1 or 0*/
+
 	if(trigger==0)
 	{
 		Character_Display_SetCursor(1, 12);
@@ -168,10 +162,12 @@ void Update_Character_Display_Trigger(uint8_t trigger)
 
 void Update_Character_Display_Time(uint16_t new_time)
 {
-	uint8_t thou_place = new_time / 1000;
-	uint8_t hund_place = (new_time - (thou_place * 1000)) / 100;
-	uint8_t tens_place = (new_time - (thou_place * 1000) - (hund_place * 100)) / 10;
-	uint8_t ones_place = (new_time - (thou_place * 1000) - (hund_place * 100) - (tens_place * 10));
+	//if (new_time > 1001U) { return; } /*Time should never be greater than 100ms*/
+
+	uint16_t thou_place = new_time / 1000;
+	uint16_t hund_place =(new_time - (thou_place * 1000)) / 100;
+	uint16_t tens_place = (new_time - (thou_place * 1000) - (hund_place * 100)) / 10;
+	uint16_t ones_place = (new_time - (thou_place * 1000) - (hund_place * 100) - (tens_place * 10));
 
 	Character_Display_SetCursor(1, 0);    // cursor to row 0, col 0
 	Character_Display_Write(thou_place + '0');
@@ -186,8 +182,10 @@ void Update_Character_Display_Time(uint16_t new_time)
 
 void Update_Character_Display_Volt_Start(uint16_t new_start)
 {
-	uint8_t tens_place = new_start / 10;
-	uint8_t ones_place = new_start - (tens_place * 10);
+	//if (new_start > 31U) { return; } /* Should never be greater than 30*/
+
+	uint16_t tens_place = new_start / 10;
+	uint16_t ones_place = new_start - (tens_place * 10);
 
 	Character_Display_SetCursor(0, 11);
 	Character_Display_Write(tens_place + '0');

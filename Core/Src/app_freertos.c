@@ -267,7 +267,11 @@ void Task_Character_Display(void *argument)
   {
 	  osDelay(50);
 	  lcd_stage = 4;
-	  // TODO, MAKE GO FASTER Update_Character_Display_Time(time);
+
+	  //if (mode > 1U)          { continue; }   /*trigger mode must be 0 or 1*/
+	  //if (current > 31U)      { continue; }   /*voltage must be below 31 (3.1V)*/
+	  //if (time > 1001U)       { continue; }   /*time must be below 1000*/
+	  //if (start_point > 31U)  { continue; }   /*start point be below 31 (3.1V)*/
 
 	  if(new_mode!=mode)
 	  {
@@ -369,6 +373,7 @@ void Trigger_Encoder_Task(void *argument)
   for(;;)
   {
 	Raise_Lower_Start();
+	//true or false assertions
     osDelay(1);
   }
   /* USER CODE END myTask07 */
@@ -376,9 +381,6 @@ void Trigger_Encoder_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-void Transmit_Spi()
-{
-		/*TODO*/
-}
+
 /* USER CODE END Application */
 

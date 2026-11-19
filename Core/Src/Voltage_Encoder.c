@@ -75,6 +75,7 @@ int8_t Read_Input()
         qB = LOW;
         break;
     default:
+    		//qB = HIGH;
     		input = 0;
     		break;
     }
@@ -84,12 +85,16 @@ int8_t Read_Input()
 
 uint16_t Raise_Lower_Voltage(void)
 {
+	//if (current > 30U) { current = 30U; } /* If current somehow gets higher, set to 30*/
+
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {
 		          ;
 		      }
 
 	  int8_t input = Read_Input();
+
+	  //if ((input < -1) || (input > 1)) { return current; } /*If input other than 1, 0, -1, return, impossible case*/
 
 	  if((input == 1) && (current<30))
 	  {

@@ -76,6 +76,7 @@ int8_t read_encoder()
 
     default:
         	input = 0;
+        	//qB = HIGH;
         	break;
     }
 
@@ -84,12 +85,16 @@ int8_t read_encoder()
 
 uint16_t Raise_Lower_Start(void)
 {
+	//if (start_point > 30U) { start_point = 30U; } /* If start_point somehow gets higher, set to 30*/
+
 	for(uint16_t i = 0; i < 1234; i++)
 			  {
 				  ;
 			  }
 
 	  int8_t input = read_encoder();
+
+	  //if ((input < -1) || (input > 1)) { return start_point; } /*If input other than 1 or 0, return, impossible case*/
 
 	  if((input == 1) && (start_point<Max_voltage))
 	  {
