@@ -79,7 +79,7 @@ int8_t read_time(void)
 
     default:
     		input = 0;
-    		//qB = HIGH;
+    		qB = HIGH;
     		break;
     }
 
@@ -89,7 +89,7 @@ int8_t read_time(void)
 uint16_t Raise_Lower_Time(void)
 {
 
-	//if (time > 1000U) { time = 1000U; } /* If time somehow gets higher, set to 1000*/
+	if (time > 1000U) { time = 1000U; } /* If time somehow gets higher, set to 1000*/
 
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {
@@ -98,7 +98,7 @@ uint16_t Raise_Lower_Time(void)
 
 	  int8_t input = read_time();
 
-	  //if ((input < -1) || (input > 1)) { return time; } /*If input other than 1 or 0, return, impossible case*/
+	  if ((input < -1) || (input > 1)) { return time; } /*If input other than 1 or 0, return, impossible case*/
 
 	  if((input == 1) && (time<100))
 	  {

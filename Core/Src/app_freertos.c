@@ -268,10 +268,10 @@ void Task_Character_Display(void *argument)
 	  osDelay(50);
 	  lcd_stage = 4;
 
-	  //if (mode > 1U)          { continue; }   /*trigger mode must be 0 or 1*/
-	  //if (current > 31U)      { continue; }   /*voltage must be below 31 (3.1V)*/
-	  //if (time > 1001U)       { continue; }   /*time must be below 1000*/
-	  //if (start_point > 31U)  { continue; }   /*start point be below 31 (3.1V)*/
+	  if (mode > 1U)          { continue; }   /*trigger mode must be 0 or 1*/
+	  if (current > 31U)      { continue; }   /*voltage must be below 31 (3.1V)*/
+	  if (time > 1001U)       { continue; }   /*time must be below 1000*/
+	  if (start_point > 31U)  { continue; }   /*start point be below 31 (3.1V)*/
 
 	  if(new_mode!=mode)
 	  {

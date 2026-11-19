@@ -118,10 +118,10 @@ void Character_Display_ShowZero(void)
 
 void Update_Character_Display_Voltage(uint16_t new_voltage)
 {
-	//if (new_voltage > 31) { return; } /*Asserting voltage is no more than 30*/
+	if (new_voltage > 31) { return; } /*Asserting voltage is no more than 30*/
 
 	uint16_t tens_place = new_voltage / 10;
-	uint16_t ones_place = new_voltage - (tens_place * 10);
+	uint16_t ones_place = (uint16_t)new_voltage - (uint16_t)(tens_place * 10);
 
 	Character_Display_Command(0x80);    // cursor to row 0, col 0
 	Character_Display_Write(tens_place + '0');
@@ -133,7 +133,7 @@ void Update_Character_Display_Voltage(uint16_t new_voltage)
 
 void Update_Character_Display_Trigger(uint16_t trigger)
 {
-	//if (trigger > 1U) { return; } /*Trigger should only ever be 1 or 0*/
+	if (trigger > 1U) { return; } /*Trigger should only ever be 1 or 0*/
 
 	if(trigger==0)
 	{
@@ -162,12 +162,12 @@ void Update_Character_Display_Trigger(uint16_t trigger)
 
 void Update_Character_Display_Time(uint16_t new_time)
 {
-	//if (new_time > 1001U) { return; } /*Time should never be greater than 100ms*/
+	if (new_time > 1001U) { return; } /*Time should never be greater than 100ms*/
 
 	uint16_t thou_place = new_time / 1000;
-	uint16_t hund_place =(new_time - (thou_place * 1000)) / 100;
-	uint16_t tens_place = (new_time - (thou_place * 1000) - (hund_place * 100)) / 10;
-	uint16_t ones_place = (new_time - (thou_place * 1000) - (hund_place * 100) - (tens_place * 10));
+	uint16_t hund_place = (uint16_t)(new_time - (thou_place * 1000)) / 100;
+	uint16_t tens_place = (uint16_t)(new_time - (thou_place * 1000) - (hund_place * 100)) / 10;
+	uint16_t ones_place = (uint16_t)(new_time - (thou_place * 1000) - (hund_place * 100) - (tens_place * 10));
 
 	Character_Display_SetCursor(1, 0);    // cursor to row 0, col 0
 	Character_Display_Write(thou_place + '0');
@@ -182,10 +182,10 @@ void Update_Character_Display_Time(uint16_t new_time)
 
 void Update_Character_Display_Volt_Start(uint16_t new_start)
 {
-	//if (new_start > 31U) { return; } /* Should never be greater than 30*/
+	if (new_start > 31U) { return; } /* Should never be greater than 30*/
 
 	uint16_t tens_place = new_start / 10;
-	uint16_t ones_place = new_start - (tens_place * 10);
+	uint16_t ones_place = (uint16_t)new_start - (uint16_t)(tens_place * 10);
 
 	Character_Display_SetCursor(0, 11);
 	Character_Display_Write(tens_place + '0');

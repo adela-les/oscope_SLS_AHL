@@ -9,7 +9,7 @@
 #include "main.h"
 #include "app_freertos.h"
 
-//uint16_t setting = count;
+
 volatile uint8_t mode = 0;
 
 uint8_t Button_Read(void)
@@ -61,7 +61,7 @@ uint8_t Button_Read(void)
 		qIncrement = HIGH;
 		break;
 	default:
-		//qIncrement = HIGH;
+		qIncrement = HIGH;
 		return 0;
 	}
 	return 0;
@@ -70,7 +70,7 @@ uint8_t Button_Read(void)
 
 uint8_t Rise_Or_Fall(void)
 {
-	 //if (mode > 1U) { mode = 0; } /*Mode must be 1 or 0, reset if not*/
+	 if (mode > 1U) { mode = 0; } /*Mode must be 1 or 0, reset if not*/
 
 	 for(uint16_t i = 0; i < 1234; i++)
 		      {
@@ -79,7 +79,7 @@ uint8_t Rise_Or_Fall(void)
 
 	  uint8_t input = Button_Read();
 
-	  //if (input > 1U) { return mode; } /*If input is impossible, return*/
+	  if (input > 1U) { return mode; } /*If input is impossible, return*/
 
 	  if((input == 1) && (mode == 1))
 	  {
