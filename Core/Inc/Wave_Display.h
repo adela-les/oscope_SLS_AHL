@@ -15,11 +15,10 @@
 #define WaveD_H 64u /*Height*/
 #define WaveD_PAGES (WaveD_H / 8u) /*8 pages of 8 rows*/
 
-void WaveD_Init(void);  /*Reset, Turn Display On, Intialize*/
-void WaveD_Task_Body(void); /*Call the CubeMX display task*/
-void WaveD_Clear(void);  /*Clear the frame Buffer*/
-void WaveD_Set_Pixel(uint8_t x, uint8_t y, bool on);  /*Turn on one frame*/
-void WaveD_Flush(void);  /*Send the frame*/
-
+bool WaveD_Init(void);  /*Set up pins, SPI, frame buffer and mutex. False if the mutex could not be created*/
+void WaveD_Task_Body(void); /*Call from the CubeMX display task only. Never returns*/
+bool WaveD_Clear(void);  /*Clear the frame buffer. False if not initialized or the mutex failed*/
+bool WaveD_Set_Pixel(uint8_t x, uint8_t y, bool on);  /*Set or clear one pixel. False if out of range or the mutex failed*/
+bool WaveD_Flush(void);  /*Ask the display task to send the frame. False if the task has not started*/
 
 #endif /*INC_WAVE_DISPLAY_H_*/
